@@ -213,7 +213,7 @@ class WeMoDeepArchives extends clsModel {
         if(is_null(WeMoDeepArchives::$sensors)) WeMoDeepArchives::$sensors = new WeMoDeepArchives();
         return WeMoDeepArchives::$sensors;
     }
-    public static function SaveLog($data){
+    public static function SaveLog(array $data){ 
         $sensors = WeMoDeepArchives::GetInstance();
         $data['guid'] = md5($data['mac_address'].$data['day_of_week'].$data['month']);
         return $sensors->Save($data);

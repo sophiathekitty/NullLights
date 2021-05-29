@@ -206,11 +206,9 @@ class WeMoArchives extends clsModel {
         if(is_null(WeMoArchives::$sensors)) WeMoArchives::$sensors = new WeMoArchives();
         return WeMoArchives::$sensors;
     }
-    public static function AddLog($mac_address,$state){
-        WeMoLogs::SaveLog(['mac_address'=>$mac_address,'state'=>$state]);
-    }
-    public static function SaveLog($data){
+    public static function SaveLog(array $data){
         $sensors = WeMoArchives::GetInstance();
+        $sensors->PruneField('created',WeeksToSeconds(Settings::LoadSettingsVar('wemo_archive_weeks',5)));
         $data['guid'] = md5($data['mac_address'].$data['created']);
         return $sensors->Save($data);
     }

@@ -1,7 +1,7 @@
 <?php
 
-class WeMoLogs extends clsModel {
-    public $table_name = "WeMoLogs";
+class AutomationLogs extends clsModel {
+    public $table_name = "AutomationLogs";
     public $fields = [
         [
             'Field'=>"guid",
@@ -18,8 +18,15 @@ class WeMoLogs extends clsModel {
             'Default'=>"",
             'Extra'=>""
         ],[
-            'Field'=>"state",
-            'Type'=>"int(11)",
+            'Field'=>"event",
+            'Type'=>"varchar(100)",
+            'Null'=>"NO",
+            'Key'=>"",
+            'Default'=>"",
+            'Extra'=>""
+        ],[
+            'Field'=>"details",
+            'Type'=>"varchar(200)",
             'Null'=>"NO",
             'Key'=>"",
             'Default'=>"",
@@ -35,20 +42,18 @@ class WeMoLogs extends clsModel {
     ];
     private static $sensors = null;
     private static function GetInstance(){
-        if(is_null(WeMoLogs::$sensors)) WeMoLogs::$sensors = new WeMoLogs();
-        return WeMoLogs::$sensors;
+        if(is_null(AutomationLogs::$sensors)) AutomationLogs::$sensors = new AutomationLogs();
+        return AutomationLogs::$sensors;
     }
-    public static function AddLog(string $mac_address, int $state){
-        WeMoLogs::SaveLog(['mac_address'=>$mac_address,'state'=>$state]);
-    }
-    public static function SaveLog(array $data){
-        $sensors = WeMoLogs::GetInstance();
-        $sensors->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('wemo_log_days',2)));
-        $data['guid'] = md5($data['mac_address'].date("Y-m-d H:i:s").$data['state']);
+    public static function SaveLog($data){
+        $sensors = AutomationLogs::GetInstance();
+        $sensors->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('automation_log_days',5)));
+        $data = $sensors->CleanData($data);
+        $data['guid'] = md5($data['mac_address'].date("Y-m-d H:i:s").$data['event']);
         return $sensors->Save($data);
     }
 }
 if(defined('VALIDATE_TABLES')){
-    clsModel::$models[] = new WeMoLogs();
+    clsModel::$models[] = new AutomationLogs();
 }
 ?>

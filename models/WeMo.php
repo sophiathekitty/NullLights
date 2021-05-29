@@ -36,8 +36,8 @@ class WeMoLights extends clsModel {
             'Type'=>"int(11)",
             'Null'=>"NO",
             'Key'=>"",
-            'Default'=>"",
-            'Extra'=>"0"
+            'Default'=>"0",
+            'Extra'=>""
         ],[
             'Field'=>"state",
             'Type'=>"int(11)",
