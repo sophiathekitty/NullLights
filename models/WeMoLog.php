@@ -25,6 +25,13 @@ class WeMoLogs extends clsModel {
             'Default'=>"",
             'Extra'=>""
         ],[
+            'Field'=>"error",
+            'Type'=>"int(11)",
+            'Null'=>"NO",
+            'Key'=>"",
+            'Default'=>"0",
+            'Extra'=>""
+        ],[
             'Field'=>"created",
             'Type'=>"datetime",
             'Null'=>"NO",
@@ -44,6 +51,7 @@ class WeMoLogs extends clsModel {
     public static function SaveLog(array $data){
         $sensors = WeMoLogs::GetInstance();
         $sensors->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('wemo_log_days',2)));
+        $data = $sensors->CleanData($data);
         $data['guid'] = md5($data['mac_address'].date("Y-m-d H:i:s").$data['state']);
         return $sensors->Save($data);
     }

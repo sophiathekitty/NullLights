@@ -1,8 +1,33 @@
 <?php
 class WeMoSync {
-
-
-
+    private static function DoWeMoObserve(){
+        switch(Settings::LoadSettingsVar('do_wemo_observe','auto')){
+            case "yes":
+                return true;
+            case "no":
+                return false;
+        }
+        return Servers::IsHub();
+    }
+    public static function Observe(){
+        if(WeMoSync::DoWeMoObserve()){
+            // do wemo observe python command
+            echo "\nDo python observer?\n";
+        } else {
+            echo "\nDo pull from hub?\n";
+            WeMoSync::PullLightsFromHub();
+        }
+    }
+    public static function PullLightsFromHub(){
+        if(Servers::IsHub()) return null;
+        $hub = Servers::GetHub();
+        if(is_null($hub)) return null;
+        $lights = LoadJsonArray("http://".$hub['url']."/api/light");
+        foreach($lights["lights"] as $light){
+            WeMoLights::SaveWeMo($light);
+            WeMoLogs::SaveLog($light);
+        }
+    }
     public static function CheckWeMoServer($host){
         $wemo = WeMoSync::CheckWeMo($host['ip']);
         if($wemo && isset($wemo['mac_address'],$wemo['name'])){
