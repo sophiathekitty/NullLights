@@ -17,14 +17,14 @@ class WeMoDeepArchives extends clsModel {
             'Key'=>"",
             'Default'=>"",
             'Extra'=>""
-        ],,[
+        ],[
             'Field'=>"month",
             'Type'=>"tinyint(4)",
             'Null'=>"NO",
             'Key'=>"",
             'Default'=>"",
             'Extra'=>""
-        ],,[
+        ],[
             'Field'=>"mac_address",
             'Type'=>"varchar(100)",
             'Null'=>"NO",
@@ -215,6 +215,7 @@ class WeMoDeepArchives extends clsModel {
     }
     public static function SaveLog(array $data){ 
         $sensors = WeMoDeepArchives::GetInstance();
+        $data = $sensors->CleanData($data);
         $data['guid'] = md5($data['mac_address'].$data['day_of_week'].$data['month']);
         return $sensors->Save($data);
     }
@@ -222,4 +223,5 @@ class WeMoDeepArchives extends clsModel {
 if(defined('VALIDATE_TABLES')){
     clsModel::$models[] = new WeMoDeepArchives();
 }
+
 ?>

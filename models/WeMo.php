@@ -84,6 +84,19 @@ class WeMoLights extends clsModel {
         $sensors = WeMoLights::GetInstance();
         return $sensors->LoadAll();
     }
+    public static function MacAddress($mac_address){
+        $sensors = WeMoLights::GetInstance();
+        return $sensors->LoadWhere(['mac_address'=>$mac_address]);
+    }
+    public static function SaveWeMo(array $data){
+        $sensors = WeMoLights::GetInstance();
+        $data = $sensors->CleanData($data);
+        $wemo = WeMoLights::MacAddress($data['mac_address']);
+        if($wemo){
+            return $sensors->Save($data,['mac_address'=>$data['mac_address']]);
+        }
+        return $sensors->Save($data);
+    }
 }
 if(defined('VALIDATE_TABLES')){
     clsModel::$models[] = new WeMoLights();
