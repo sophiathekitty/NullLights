@@ -55,6 +55,20 @@ class WeMoLogs extends clsModel {
         $data['guid'] = md5($data['mac_address'].date("Y-m-d H:i:s").$data['state']);
         return $sensors->Save($data);
     }
+    public static function Recent($mac_address,$seconds){
+        $sensors = WeMoLogs::GetInstance();
+        return $sensors->LoadWhereFieldAfter(['mac_address'=>$mac_address],'created',date("Y-m-d H:i:s",time()-$seconds));
+    }
+    public static function LastOn($mac_address){
+        $sensors = WeMoLogs::GetInstance();
+        $sensors = new clsModel();
+        return $sensors->LoadWhere(['mac_address'=>$mac_address,"state"=>1],['created'=>'DESC']);
+    }
+    public static function LastOff($mac_address){
+        $sensors = WeMoLogs::GetInstance();
+        $sensors = new clsModel();
+        return $sensors->LoadWhere(['mac_address'=>$mac_address,"state"=>0],['created'=>'DESC']);
+    }
 }
 if(defined('VALIDATE_TABLES')){
     clsModel::$models[] = new WeMoLogs();

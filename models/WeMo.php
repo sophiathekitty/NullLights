@@ -134,6 +134,21 @@ class WeMoLights extends clsModel {
         if(strpos(strtolower($wemo['name']),"stars") > -1) return "stars";
         return "other";
     }
+
+    public static function RoomLights($room_id,$subtype = null){
+        return WeMoLights::RoomWeMos($room_id,"light",$subtype);
+    }
+    public static function RoomWeMos($room_id,$type = null, $subtype = null){
+        $sensors = WeMoLights::GetInstance();
+        if(is_null($type) && is_null($subtype)) return $sensors->LoadAllWhere(['room_id'=>$room_id]);
+        if(is_null($subtype)) return $sensors->LoadAllWhere(['room_id'=>$room_id,'type'=>$type]);
+        return $sensors->LoadAllWhere(['room_id'=>$room_id,'type'=>$subtype,'subtype'=>$subtype]);
+    }
+    public static function WeMos($type, $subtype = null){
+        $sensors = WeMoLights::GetInstance();
+        if(is_null($subtype)) return $sensors->LoadAllWhere(['type'=>$type]);
+        return $sensors->LoadAllWhere(['type'=>$subtype,'subtype'=>$subtype]);
+    }
 }
 if(defined('VALIDATE_TABLES')){
     clsModel::$models[] = new WeMoLights();
