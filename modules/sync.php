@@ -1,5 +1,9 @@
 <?php
 class WeMoSync {
+    /**
+     * should we observe the wemos directly? (run python script)
+     * @return bool returns true if do_we_observe is set to "yes" or if this is the hub server
+     */
     private static function DoWeMoObserve(){
         switch(Settings::LoadSettingsVar('do_wemo_observe','auto')){
             case "yes":
@@ -9,15 +13,22 @@ class WeMoSync {
         }
         return Servers::IsHub();
     }
+    /**
+     * observe the wemo states
+     */
     public static function Observe(){
         if(WeMoSync::DoWeMoObserve()){
             // do wemo observe python command
-            echo "\nDo python observer?\n";
+            WeMo::Observe();
+            WeMo::Log();
         } else {
             echo "\nDo pull from hub?\n";
             WeMoSync::PullLightsFromHub();
         }
     }
+    /**
+     * pulls the lights from the hub
+     */
     public static function PullLightsFromHub(){
         if(Servers::IsHub()) return null;
         $hub = Servers::GetHub();
@@ -28,6 +39,11 @@ class WeMoSync {
             WeMoLogs::SaveLog($light);
         }
     }
+    /**
+     * checks if a host is a wemo and saves it to the wemo table if it is
+     * @param array $host data object with $host['ip'] set
+     * @return array returns the $host object with the $host['type'] set to "WeMo" if host is a wemo
+     */
     public static function CheckWeMoServer($host){
         $wemo = WeMoSync::CheckWeMo($host['ip']);
         if($wemo && isset($wemo['mac_address'],$wemo['name'])){
@@ -36,6 +52,11 @@ class WeMoSync {
         }
         return $host;
     }
+    /**
+     * checks a wemo at an ip address
+     * @param string $ip the ip address to check
+     * @return array returns a wemo data array
+     */
     private static function CheckWeMo($ip){
         $wemo = ['url'=>$ip,'port'=>49153];
         $ports = WeMoSync::WeMoPorts($ip);
@@ -58,6 +79,11 @@ class WeMoSync {
         if(count($match) > 0) $wemo['mac_address'] = $match[1];
         return $wemo;
     }
+    /**
+     * finds the valid wemo ports to check
+     * @param string $ip the ip address to scan
+     * @return array returns list of ports to try
+     */
     private static function WeMoPorts($ip){
         $raw_output = shell_exec("nmap $ip");
         $lines = explode("\n",$raw_output);

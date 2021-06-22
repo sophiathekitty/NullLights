@@ -206,11 +206,38 @@ class WeMoArchives extends clsModel {
         if(is_null(WeMoArchives::$sensors)) WeMoArchives::$sensors = new WeMoArchives();
         return WeMoArchives::$sensors;
     }
+    /**
+     * save a log
+     * @param array $data the data array for the log being created
+     * @return array the save report
+     */
     public static function SaveLog(array $data){
         $sensors = WeMoArchives::GetInstance();
         $sensors->PruneField('created',WeeksToSeconds(Settings::LoadSettingsVar('wemo_archive_weeks',5)));
+        if(!isset($data['created'])) $data['created'] = date("Y-m-d H:i:s");
         $data['guid'] = md5($data['mac_address'].$data['created']);
         return $sensors->Save($data);
+    }
+    /**
+     * load recent archives for a wemo
+     * @param string $mac_address the mac address of the wemo
+     * @param int $days how many days back to go
+     * @return array list of recent archives for the wemo 
+     */
+    public static function Recent($mac_address,$days){
+        $sensors = WeMoArchives::GetInstance();
+        $seconds = DaysToSeconds($days);
+        return $sensors->LoadWhereFieldAfter(['mac_address'=>$mac_address],'created',date("Y-m-d H:i:s",time()-$seconds));
+    }
+    /**
+     * gets the archive data for a month
+     * @param string $mac_address the mac address of the wemo
+     * @param int $month the month number (1-12)
+     * @return array list of archive records for a month for the wemo
+     */
+    public static function Month($mac_address,$month){
+        $sensors = WeMoArchives::GetInstance();
+        return $sensors->LoadFieldBetweenWhere("`mac_address` = '$mac_address'",'created',date("Y-$month-1 00:00:00"),date("Y-$month-".date("t",strtotime(date("Y-$month-1 00:00:00")))." 23:59:59"));
     }
 }
 if(defined('VALIDATE_TABLES')){
