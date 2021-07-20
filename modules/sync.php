@@ -18,12 +18,25 @@ class WeMoSync {
      */
     public static function Observe(){
         if(WeMoSync::DoWeMoObserve()){
+            Settings::SaveSettingsVar("service::ObserveLights","python ".date("H:i:s"));
             // do wemo observe python command
             WeMo::Observe();
             WeMo::Log();
         } else {
+            Settings::SaveSettingsVar("service::ObserveLights","hub ".date("H:i:s"));
             echo "\nDo pull from hub?\n";
             WeMoSync::PullLightsFromHub();
+        }
+        // cache room_light_on
+        $rooms = Rooms::AllRooms();
+        foreach($rooms as $room){
+            $lights = WeMoLights::RoomLights($room['id']);
+            $on = 0;
+            foreach($lights as $light){
+                if((int)$light['state'] == 1 && $light['type'] == "light") $on = 1;
+            }
+            echo "room: ".$room['name']." $on\n";
+            Rooms::SaveRoom(['id'=>$room['id'],"lights_on_in_room"=>$on]);
         }
     }
     /**
@@ -34,6 +47,7 @@ class WeMoSync {
         $hub = Servers::GetHub();
         if(is_null($hub)) return null;
         $lights = LoadJsonArray("http://".$hub['url']."/api/light");
+        Settings::SaveSettingsVar("service::PullLights",date("H:i:s"));
         foreach($lights["lights"] as $light){
             WeMoLights::SaveWeMo($light);
             WeMoLogs::SaveLog($light);

@@ -132,7 +132,11 @@ class AutomationRuleHandler {
         if(defined("SensorsPlugin")){
             switch($condition['cmd']){
                 case "RoomTemperatureAbove":
+                    $temp = RoomDHT11::RoomTemperature($wemo['room_id']);
+                    return ["pass"=>($temp ['temp'] > (float)$condition['val']),"val"=>$temp ['temp']];
                 case "RoomTemperatureBelow":
+                    $temp = RoomDHT11::RoomTemperature($wemo['room_id']);
+                    return ["pass"=>($temp ['temp'] < (float)$condition['val']),"val"=>$temp ['temp']];
                 case "RecentMotionDetected":
                 case "LightAboveThreshold":
                 case "LightBelowThreshold":
@@ -144,7 +148,9 @@ class AutomationRuleHandler {
         if(defined("WeatherPlugin") && defined("SensorsPlugin")){
             switch($condition['cmd']){
                 case "CoolerOutsideThanRoom":
+                    $temp = RoomDHT11::RoomTemperature($wemo['room_id']);
                 case "WarmerOutsideThanRoom":
+                    $temp = RoomDHT11::RoomTemperature($wemo['room_id']);
             }    
         }
         return ["pass"=>false];
