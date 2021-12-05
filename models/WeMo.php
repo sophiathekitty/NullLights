@@ -122,6 +122,8 @@ class WeMoLights extends clsModel {
     }
     public static function WeMoType($wemo){
         if(strpos(strtolower($wemo['name']),"light") > -1) return "light";
+        if(strpos(strtolower($wemo['name']),"lamp") > -1) return "light";
+        if(strpos(strtolower($wemo['name']),"ambient") > -1) return "light";
         if(strpos(strtolower($wemo['name']),"fan") > -1) return "fan";
         return "other";
     }

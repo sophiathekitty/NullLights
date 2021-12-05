@@ -45,6 +45,17 @@ class AutomationLogs extends clsModel {
         if(is_null(AutomationLogs::$sensors)) AutomationLogs::$sensors = new AutomationLogs();
         return AutomationLogs::$sensors;
     }
+    public static function CreateAutomationLog($event,$details, $mac_address){
+        AutomationLogs::SaveLog(['event'=>$event,"details"=>$details,'mac_address'=>$mac_address]);
+    }
+    public static function GetLastAutomationLightLog($mac_address,$event){
+        $log = AutomationLogs::GetInstance();
+        return $log->LoadWhere(['mac_address'=>$mac_address,'event'=>$event],['created'=>'DESC']);
+    }
+    public static function TimeSinceAutomaticLightEvent($wemo,$event){
+        $event = AutomationLogs::GetLastAutomationLightLog($wemo['mac_address'],$event);
+        return time() - strtotime($event['datetime']);
+    }
     public static function SaveLog($data){
         $sensors = AutomationLogs::GetInstance();
         $sensors->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('automation_log_days',5)));

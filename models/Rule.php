@@ -13,13 +13,13 @@ class AutomationRules extends clsModel {
             'Field'=>"name",
             'Type'=>"varchar(100)",
             'Null'=>"NO",
-            'Key'=>"PRI",
+            'Key'=>"",
             'Default'=>"",
-            'Extra'=>"auto_increment"
+            'Extra'=>""
         ],[
             'Field'=>"room_id",
             'Type'=>"int(11)",
-            'Null'=>"NO",
+            'Null'=>"YES",
             'Key'=>"",
             'Default'=>"",
             'Extra'=>""

@@ -2,7 +2,7 @@
 class AutomationRuleHandler {
     /**
      * converts conditions string into a json array
-     * @param string $conditions
+     * @param string $conditions cmd cmd:val cmd:val1,val2,val3
      * @return array json array of conditions
      */
     public static function ParseConditions($conditions){
@@ -149,8 +149,12 @@ class AutomationRuleHandler {
             switch($condition['cmd']){
                 case "CoolerOutsideThanRoom":
                     $temp = RoomDHT11::RoomTemperature($wemo['room_id']);
+                    $weather = WeatherLogs::CurrentWeather();
+                    return ["pass"=>($temp ['temp'] > $weather['temp']),"val"=>($temp ['temp'] + ">" + $weather['temp'])];
                 case "WarmerOutsideThanRoom":
                     $temp = RoomDHT11::RoomTemperature($wemo['room_id']);
+                    $weather = WeatherLogs::CurrentWeather();
+                    return ["pass"=>($temp ['temp'] < $weather['temp']),"val"=>($temp ['temp'] + "<" + $weather['temp'])];
             }    
         }
         return ["pass"=>false];
@@ -184,10 +188,12 @@ class AutomationRuleHandler {
      * apply the automation to the wemo
      */
     public static function ApplyAutomation($wemo,$rule,$details){
-        if($wemo['state'] != $rule['state'] && $wemo['target_state'] != $rule['state']){
+        if($wemo['state'] != $rule['state'] && $wemo['target_state'] != $rule['state'] && (SecondsToMinutes(AutomationLogs::TimeSinceAutomaticLightEvent($wemo,$rule['name'])) > 60 || $rule['state'] == 1)){
             AutomationLogs::SaveLog(["mac_address"=>$wemo['mac_address'],"event"=>$rule['name'],"details"=>$details]);
             WeMoLights::SaveWeMo(["mac_address"=>$wemo['mac_address'],"target_state"=>$rule['state']]);
             // run python script
+            WeMo::Observe();
+            WeMo::SetState($wemo);    
         }
     }
 }
