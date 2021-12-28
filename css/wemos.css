@@ -1,0 +1,73 @@
+ul#wemos a[var="name"]::before{
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    margin-right: 0.5em;
+    transform: translateY(0.2em);
+}
+
+ul#wemos [type="light"][state="0"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/light-off.png);
+}
+ul#wemos [type="light"][state="1"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/light-on.png);
+}
+
+ul#wemos [type="light"][subtype="lamp"][state="0"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/lamp-off.png);
+}
+ul#wemos [type="light"][subtype="lamp"][state="1"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/lamp-on.png);
+}
+
+ul#wemos [type="light"][subtype="mood"][state="0"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/mood-off.png);
+}
+ul#wemos [type="light"][subtype="mood"][state="1"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/mood-on.png);
+}
+
+ul#wemos [type="light"][subtype="ambient"][state="0"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/ambient-off.png);
+}
+ul#wemos [type="light"][subtype="ambient"][state="1"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/ambient-on.png);
+}
+
+
+ul#wemos [type="other"][subtype="lava"][state="0"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/bubbles-off.png);
+}
+ul#wemos [type="other"][subtype="lava"][state="1"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/bubbles-on.png);
+}
+
+ul#wemos [type="other"][subtype="stars"][state="0"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/stars-off.png);
+}
+ul#wemos [type="other"][subtype="stars"][state="1"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/stars-on.png);
+}
+
+ul#wemos [type="fan"][state="0"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/fan-off.png);
+}
+ul#wemos [type="fan"][state="1"] a[var="name"]::before {
+    background-image: url(/plugins/NullLights/img/fan-on.png);
+}
+ul#wemos [state="1"] a{
+    color: gold;
+}
+ul#wemos [state="0"] a{
+    color: gray;
+}
+ul#wemos [state="0"][target_state="1"] a{
+    color: goldenrod
+}
+ul#wemos [state="1"][target_state="0"] a{
+    color: darkgray;
+}

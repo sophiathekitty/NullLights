@@ -7,7 +7,7 @@ from peewee import *
 from miranda import upnp
 import xml.etree.ElementTree as ET
 from contextlib import contextmanager
-import urllib3
+from six.moves import urllib
 import json
 
 class TimeoutException(Exception): pass
@@ -33,7 +33,7 @@ def time_limit(seconds):
 class wemo_device():
     wemos = []
     def __init__(self,data):
-        self.http = urllib3.PoolManager()
+        
         self.parseLoadData(data)
         self.timeout_val = 8
     # parse the json data
@@ -47,15 +47,16 @@ class wemo_device():
         #self.cur.execute("SELECT `room_id`, `state`, `target_state`, `last_on`, `last_off`, `modified` FROM `WeMoLights` WHERE `mac_address` = '{}' LIMIT 1".format(self.mac_address))        #    self.room_id = row[0]
         self.state = data['state']
         self.target_state = data['target_state']
-        self.last_on = data['last_on']
-        self.last_off = data['last_off']
+        #self.last_on = data['last_on']
+        #self.last_off = data['last_off']
         self.modified = data['modified']
     #
     # load data from the databases
     #
     def findPort(self):
-        resp = self.http.request('GET', 'http://localhost/plugins/NullLights/api/light/python',fields={'mac_address': self.mac_address,'find_port':1})
-        data = json.loads(resp.data.decode('utf-8'))
+        return False
+        resp = urllib.request.urlopen('http://localhost/plugins/NullLights/api/light/python?mac_address='+self.mac_address+'&find_port='+1)
+        data = json.loads(resp.read())
         if('light' in data):
             if('error' in data):
                 return False
@@ -66,8 +67,8 @@ class wemo_device():
     # load data from the databases
     #
     def load(self):
-        resp = self.http.request('GET', 'http://localhost/plugins/NullLights/api/light/python',fields={'mac_address': self.mac_address})
-        data = json.loads(resp.data.decode('utf-8'))
+        resp = urllib.request.urlopen('http://localhost/plugins/NullLights/api/light/python?mac_address='+self.mac_address)
+        data = json.loads(resp.read())
         self.parseLoadData(data)
         # grab light info
 
@@ -115,8 +116,11 @@ class wemo_device():
             #r = self.http.request('GET','http://localhost/api/light/python',fields={'mac_address': self.mac_address,'state':'2','target_state':self.target_state})
         #else:
             #self.cur.execute("UPDATE `WeMoLights` SET `error` = 0, `state` = {}, `target_state` = {} WHERE `mac_address` = '{}'".format(self.state,self.target_state,self.mac_address))
-        r = self.http.request('GET','http://localhost/plugins/NullLights/api/light/python',fields={'mac_address': self.mac_address,'state':self.state,'target_state':self.target_state})
-
+        resp = urllib.request.urlopen('http://localhost/plugins/NullLights/api/light/python?mac_address='+self.mac_address+'&state='+str(self.state)+'&target_state='+str(self.target_state))
+        data = json.loads(resp.read())
+        print(data['sql'])
+        print(data['error'])
+        print(data['row']['state'])
         #self.db.commit()
     #
     # apply the expected state to the actual state of the wemo outlet

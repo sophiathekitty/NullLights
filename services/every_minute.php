@@ -7,7 +7,7 @@ if(is_file($root_path."plugins/NullLights/scripts/lights.php")){
     $lights = WeMoLights::AllLights();
     foreach($lights as $light){
         if(AutomateLight($light)){
-            Settings::SaveSettingsVar("service-AutomationLegacy::".$light['name'],date("H:i:s"));
+            //Settings::SaveSettingsVar("service-AutomationLegacy::".$light['name'],date("H:i:s"));
         }
     }
     echo "\nlegacy light automation done\n";

@@ -71,6 +71,19 @@ class WeMoSync {
      * @param string $ip the ip address to check
      * @return array returns a wemo data array
      */
+    public static function FindWeMoPort($mac_address){
+        $wemo = WeMoLights::MacAddress($mac_address);
+        $wemo = WeMoSync::CheckWeMo($wemo['url']);
+        if($wemo && isset($wemo['mac_address'],$wemo['name'])){
+            WeMoLights::SaveWeMo($wemo);
+        }
+        return $wemo;
+    }
+    /**
+     * checks a wemo at an ip address
+     * @param string $ip the ip address to check
+     * @return array returns a wemo data array
+     */
     private static function CheckWeMo($ip){
         $wemo = ['url'=>$ip,'port'=>49153];
         $ports = WeMoSync::WeMoPorts($ip);

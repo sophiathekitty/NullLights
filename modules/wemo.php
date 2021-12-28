@@ -5,7 +5,7 @@ class WeMo {
      * @param array $wemo the wemo data object. needs $wemo['mac_address']
      */
     public static function SetState($wemo){
-        echo shell_exec("python /var/www/html/plugins/NullLights/python/main.py ".$wemo['mac_address']);
+        shell_exec("python /var/www/html/plugins/NullLights/python/main.py ".$wemo['mac_address']);
     }
     /**
      * observes the current states for all of the known wemos
@@ -17,6 +17,7 @@ class WeMo {
      * log current wemo states
      */
     public static function Log(){
+        WeMo::Observe();
         $lights = WeMoLights::AllLights();
         foreach($lights as $light){
             WeMoLogs::AddLog($light['mac_address'],$light['state']);

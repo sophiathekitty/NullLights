@@ -2,7 +2,7 @@
 import time
 import sys
 from lighting import wemo_device
-import urllib3
+from six.moves import urllib
 import json
 
 #db = MySQLdb.connect(host="localhost", user="php", passwd="pinkstarsarefalling", db="grow_log")
@@ -16,13 +16,11 @@ import json
 #    ip = row[2]
 #    wemo_device.wemos.append(wemo_device(mac,db,cur))
 
-http = urllib3.PoolManager()
 
 if(len(sys.argv) > 1 and "obs" in sys.argv[1]):
     # observe light states
-    resp = http.request('GET', 'http://localhost/plugins/NullLights/api/light')
-    data = json.loads(resp.data.decode('utf-8'))
-
+    result = urllib.request.urlopen('http://localhost/plugins/NullLights/api/light')
+    data = json.loads(result.read())
     for light in data['lights']:
         print (light['name'])
         wemo = wemo_device(light)
@@ -36,8 +34,9 @@ if(len(sys.argv) > 1 and "obs" in sys.argv[1]):
     #    wemo.observe()
 elif(len(sys.argv)):
     mac_address = sys.argv[1]
-    resp = http.request('GET', 'http://localhost/plugins/NullLights/api/light',fields={'mac_address': mac_address})
-    data = json.loads(resp.data.decode('utf-8'))
+    #resp = http.request('GET', 'http://localhost/plugins/NullLights/api/light',fields={'mac_address': mac_address})
+    result = urllib.request.urlopen('http://localhost/plugins/NullLights/api/light?mac_address='+mac_address)
+    data = json.loads(result.read())
     wemo = wemo_device(data['light'])
     wemo.apply()
 else:
@@ -45,8 +44,8 @@ else:
     # apply light states
     #for wemo in wemo_device.wemos:
     #    wemo.apply()
-    resp = http.request('GET', 'http://localhost/plugins/NullLights/api/light')
-    data = json.loads(resp.data.decode('utf-8'))
+    result = urllib.request.urlopen('http://localhost/plugins/NullLights/api/light')
+    data = json.loads(result.read())
 
     for light in data['lights']:
         print (light['name'])

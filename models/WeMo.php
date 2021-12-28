@@ -97,13 +97,16 @@ class WeMoLights extends clsModel {
         ]
     ];
     private static $sensors = null;
+    /**
+     * @return WeMoLights|clsModel
+     */
     private static function GetInstance(){
         if(is_null(WeMoLights::$sensors)) WeMoLights::$sensors = new WeMoLights();
         return WeMoLights::$sensors;
     }
     public static function AllLights(){
         $sensors = WeMoLights::GetInstance();
-        return $sensors->LoadAll();
+        return $sensors->LoadAllWhere(null,["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
     }
     public static function MacAddress($mac_address){
         $sensors = WeMoLights::GetInstance();
@@ -112,9 +115,11 @@ class WeMoLights extends clsModel {
     public static function SaveWeMo(array $data){
         $sensors = WeMoLights::GetInstance();
         $data = $sensors->CleanData($data);
+        if(isset($data['name'])){
+            $data['type'] = WeMoLights::WeMoType($data);
+            $data['subtype'] = WeMoLights::WeMoSubType($data);    
+        }
         $wemo = WeMoLights::MacAddress($data['mac_address']);
-        $data['type'] = WeMoLights::WeMoType($data);
-        $data['subtype'] = WeMoLights::WeMoSubType($data);
         if(is_null($wemo)){
             return $sensors->Save($data);
         }
@@ -134,6 +139,7 @@ class WeMoLights extends clsModel {
         if(strpos(strtolower($wemo['name']),"lamp") > -1) return "lamp";
         if(strpos(strtolower($wemo['name']),"inquisition") > -1) return "inquisition";
         if(strpos(strtolower($wemo['name']),"stars") > -1) return "stars";
+        if(strpos(strtolower($wemo['name']),"window") > -1) return "window";
         return "other";
     }
 
@@ -142,14 +148,14 @@ class WeMoLights extends clsModel {
     }
     public static function RoomWeMos($room_id,$type = null, $subtype = null){
         $sensors = WeMoLights::GetInstance();
-        if(is_null($type) && is_null($subtype)) return $sensors->LoadAllWhere(['room_id'=>$room_id]);
-        if(is_null($subtype)) return $sensors->LoadAllWhere(['room_id'=>$room_id,'type'=>$type]);
-        return $sensors->LoadAllWhere(['room_id'=>$room_id,'type'=>$subtype,'subtype'=>$subtype]);
+        if(is_null($type) && is_null($subtype)) return $sensors->LoadAllWhere(['room_id'=>$room_id],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        if(is_null($subtype)) return $sensors->LoadAllWhere(['room_id'=>$room_id,'type'=>$type],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        return $sensors->LoadAllWhere(['room_id'=>$room_id,'type'=>$subtype,'subtype'=>$subtype],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
     }
     public static function WeMos($type, $subtype = null){
         $sensors = WeMoLights::GetInstance();
-        if(is_null($subtype)) return $sensors->LoadAllWhere(['type'=>$type]);
-        return $sensors->LoadAllWhere(['type'=>$subtype,'subtype'=>$subtype]);
+        if(is_null($subtype)) return $sensors->LoadAllWhere(['type'=>$type],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        return $sensors->LoadAllWhere(['type'=>$subtype,'subtype'=>$subtype],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
     }
 }
 if(defined('VALIDATE_TABLES')){
