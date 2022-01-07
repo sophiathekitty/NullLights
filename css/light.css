@@ -1,0 +1,90 @@
+ul .lights,
+.room.card .lights {
+    width: 100%;
+    display: block;
+    justify-content:space-between;
+}
+.lights a,
+.room.card .lights a {
+    display: inline-block;
+    width: 2em;
+    height: 2em;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url(/plugins/NullLights/img/plug-off.png);
+    margin: 0.25em;
+}
+ul .lights a{
+    width: 1em;
+    height: 1em;
+}
+.room.card .lights nav a::before,
+.room.card .lights nav a::after {
+    content: none;
+}
+[type="light"][state="0"],
+.room.card .lights [type="light"][state="0"] {
+    background-image: url(/plugins/NullLights/img/light-off.png);
+}
+[type="light"][state="1"],
+.room.card .lights [type="light"][state="1"] {
+    background-image: url(/plugins/NullLights/img/light-on.png);
+}
+
+[type="light"][subtype="lamp"][state="0"],
+.room.card .lights [type="light"][subtype="lamp"][state="0"] {
+    background-image: url(/plugins/NullLights/img/lamp-off.png);
+}
+[type="light"][subtype="lamp"][state="1"],
+.room.card .lights [type="light"][subtype="lamp"][state="1"] {
+    background-image: url(/plugins/NullLights/img/lamp-on.png);
+}
+[type="light"][subtype="mood"][state="0"],
+.room.card .lights [type="light"][subtype="mood"][state="0"] {
+    background-image: url(/plugins/NullLights/img/mood-off.png);
+}
+[type="light"][subtype="mood"][state="1"],
+.room.card .lights [type="light"][subtype="mood"][state="1"] {
+    background-image: url(/plugins/NullLights/img/mood-on.png);
+}
+[type="light"][subtype="ambient"][state="0"],
+.room.card .lights [type="light"][subtype="ambient"][state="0"] {
+    background-image: url(/plugins/NullLights/img/ambient-off.png);
+}
+[type="light"][subtype="ambient"][state="1"],
+.room.card .lights [type="light"][subtype="ambient"][state="1"] {
+    background-image: url(/plugins/NullLights/img/ambient-on.png);
+}
+
+.lights [type="fan"],
+.lights [type="other"]{
+    float: right;
+}
+
+[type="other"][subtype="lava"][state="0"],
+.room.card .lights [type="other"][subtype="lava"][state="0"] {
+    background-image: url(/plugins/NullLights/img/bubbles-off.png);
+}
+[type="other"][subtype="lava"][state="1"],
+.room.card .lights [type="other"][subtype="lava"][state="1"] {
+    background-image: url(/plugins/NullLights/img/bubbles-on.png);
+}
+
+[type="other"][subtype="stars"][state="0"],
+.room.card .lights [type="other"][subtype="stars"][state="0"] {
+    background-image: url(/plugins/NullLights/img/stars-off.png);
+}
+[type="other"][subtype="stars"][state="1"],
+.room.card .lights [type="other"][subtype="stars"][state="1"] {
+    background-image: url(/plugins/NullLights/img/stars-on.png);
+}
+
+[type="fan"][state="0"],
+.room.card .lights [type="fan"][state="0"] {
+    background-image: url(/plugins/NullLights/img/fan-off.png);
+}
+[type="fan"][state="1"],
+.room.card .lights [type="fan"][state="1"] {
+    background-image: url(/plugins/NullLights/img/fan-on.png);
+}

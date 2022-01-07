@@ -7,11 +7,10 @@ if(isset($_GET['mac_address'],$_GET['state'],$_GET['target_state'])){
     $wemo = WeMoSync::FindWeMoPort($_GET['mac_address']);
     if(is_null($wemo)){
         $data['error'] = "wemo missing";
-    } else {
-        $data['light'] = $wemo;
     }
+    $data['light'] = WeMoLights::MacAddress($_GET['mac_address']);
 } else if(isset($_GET['mac_address'])){
-    $data = WeMoLights::MacAddress($_GET['mac_address']);
+    $data['light'] = WeMoLights::MacAddress($_GET['mac_address']);
 
 } else {
     $data['lights'] = WeMoLights::AllLights();

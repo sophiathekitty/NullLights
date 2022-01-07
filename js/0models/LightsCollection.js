@@ -3,14 +3,15 @@ class LightsCollection extends Collection {
     constructor(debug = false){
         if(debug) console.log("LightsCollection::Constructor");
         super("lights","light","/plugins/NullLights/api/light","/plugins/NullLights/api/light/save","mac_address","collection_",debug);
+        this.pull_delay = 10000;
     }
     /**
      * get the lights for a room
      * @param {int} room_id 
      * @param {function(JSON)} callBack 
      */
-    static getRoomLights(room_id,callBack){
-        LightsCollection.instance.getData(json=>{
+    getRoomLights(room_id,callBack){
+        this.getData(json=>{
             var lights = Array();
             json.lights.forEach(light=>{
                 if(light.room_id == room_id) lights.push(light);
