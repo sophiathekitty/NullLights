@@ -112,7 +112,7 @@ class WeMoLights extends clsModel {
         $sensors = WeMoLights::GetInstance();
         return $sensors->LoadWhere(['mac_address'=>$mac_address]);
     }
-    public static function SaveWeMo(array $data){
+    public static function SaveWeMo(array $data, $remote_data = false){
         $sensors = WeMoLights::GetInstance();
         $data = $sensors->CleanData($data);
         if(isset($data['name'])){
@@ -123,7 +123,7 @@ class WeMoLights extends clsModel {
         if(is_null($wemo)){
             return $sensors->Save($data);
         }
-        return $sensors->Save($data,['mac_address'=>$data['mac_address']]);
+        return $sensors->Save($data,['mac_address'=>$data['mac_address']],$remote_data);
     }
     public static function WeMoType($wemo){
         if(strpos(strtolower($wemo['name']),"light") > -1) return "light";

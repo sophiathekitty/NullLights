@@ -43,13 +43,19 @@ class WeMoSync {
      * pulls the lights from the hub
      */
     public static function PullLightsFromHub(){
+        echo "WeMoSync::PullLightsFromHub\n";
         if(Servers::IsHub()) return null;
         $hub = Servers::GetHub();
         if(is_null($hub)) return null;
-        $lights = LoadJsonArray("http://".$hub['url']."/api/light");
-        Settings::SaveSettingsVar("service::PullLights",date("H:i:s"));
+        //$lights = LoadJsonArray("http://".$hub['url']."/api/light");
+        $url = "plugins/NullLights/api/light";
+        if($hub['type'] == "old_hub") $url = "/api/light";
+        $lights = ServerRequests::LoadHubJSON($url);
+        print_r($lights);
+        Settings::SaveSettingsVar("service::PullLights",count($lights)."|".date("H:i:s"));
         foreach($lights["lights"] as $light){
-            WeMoLights::SaveWeMo($light);
+            $save = WeMoLights::SaveWeMo($light,true);
+            print_r($save);
             WeMoLogs::SaveLog($light);
         }
     }
