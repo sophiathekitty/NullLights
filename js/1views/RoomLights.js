@@ -12,6 +12,16 @@ class RoomLightsView extends View {
     refresh(){
         if(this.debug) console.warn("RoomLights::Refresh missing room_id");
     }
+    refreshStates(){
+        if(this.model){
+            this.model.getData(json=>{
+                json.lights.forEach(light=>{
+                    $("[mac_address="+light.mac_address+"]").attr("state",light.state);
+                    $("[mac_address="+light.mac_address+"]").attr("target_state",light.target_state);
+                });
+            });
+        }
+    }
     build(room_id){
         if(this.debug) console.log("RoomLights::Build",room_id,$("[room_id="+room_id+"]"));
         if($("[room_id="+room_id+"]").length){

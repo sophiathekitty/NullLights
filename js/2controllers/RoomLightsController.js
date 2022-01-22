@@ -13,7 +13,7 @@ class RoomLightsController extends Controller {
             console.log("RoomLightsController::RoomsReady");
         }
         //this.interval = setInterval(this.refresh.bind(this),20000);
-        this.click("div.room.card","a.light",e=>{
+        this.click("main","a.light",e=>{
             e.preventDefault();
             var mac_address = $(e.currentTarget).attr("mac_address");
             console.log("RoomLightsController::Click",mac_address,$(e.currentTarget).html());
@@ -23,7 +23,10 @@ class RoomLightsController extends Controller {
                 if(this.debug) console.error("RoomLightsController::ToggleError",error);
             },json=>{
                 if(this.debug) console.log("RoomLightsController::ToggleDone",json);
-                this.refresh();
+                this.view.refreshStates();
+                LightsCollection.instance.pullData(json=>{
+                    this.view.refreshStates();
+                })
             });
         });
     }
