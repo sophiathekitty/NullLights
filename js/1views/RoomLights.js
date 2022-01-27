@@ -16,8 +16,8 @@ class RoomLightsView extends View {
         if(this.model){
             this.model.getData(json=>{
                 json.lights.forEach(light=>{
-                    $("[mac_address="+light.mac_address+"]").attr("state",light.state);
-                    $("[mac_address="+light.mac_address+"]").attr("target_state",light.target_state);
+                    $(".light[mac_address="+light.mac_address+"]").attr("state",light.state);
+                    $(".light[mac_address="+light.mac_address+"]").attr("target_state",light.target_state);
                 });
             });
         }
