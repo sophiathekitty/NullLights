@@ -1,5 +1,5 @@
 class WeMoListController extends Controller {
-    constructor(debug = false){
+    constructor(debug = LightsCollection.debug_lights){
         if(debug) console.log("WeMoListController::Constructor");
         super(new WeMoListView(),debug);
     }

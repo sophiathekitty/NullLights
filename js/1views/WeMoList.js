@@ -1,5 +1,5 @@
 class WeMoListView extends View {
-    constructor(debug = false){
+    constructor(debug = LightsCollection.debug_lights){
         if(debug) console.log("WeMoListView::Constructor");
         super(LightsCollection.instance,null,new Template("wemo","/plugins/NullLights/templates/wemo.html"),60000,debug);
     }

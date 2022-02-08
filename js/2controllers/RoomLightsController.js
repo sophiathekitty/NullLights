@@ -1,5 +1,5 @@
 class RoomLightsController extends Controller {
-    constructor(debug = true){
+    constructor(debug = LightsCollection.debug_lights){
         if(debug) console.log("RoomLightsController::Constructor");
         super(new RoomLightsView(),debug);
     }

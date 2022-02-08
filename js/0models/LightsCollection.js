@@ -1,6 +1,7 @@
 class LightsCollection extends Collection {
-    static instance = new LightsCollection(true);
-    constructor(debug = false){
+    static instance = new LightsCollection();
+    static debug_lights = false;
+    constructor(debug = LightsCollection.debug_lights){
         if(debug) console.log("LightsCollection::Constructor");
         super("lights","light","/plugins/NullLights/api/light","/plugins/NullLights/api/light/save","mac_address","collection_",debug);
         this.pull_delay = 10000;

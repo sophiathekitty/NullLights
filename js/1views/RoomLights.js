@@ -1,5 +1,5 @@
 class RoomLightsView extends View {
-    constructor(debug = true){
+    constructor(debug = LightsCollection.debug_lights){
         if(debug) console.log("RoomLights::Constructor");
         super(new LightsCollection(),new Template("light_groups","/plugins/NullLights/templates/groups.html"),new Template("light_button","/plugins/NullLights/templates/light.html"),60000,debug);
     }
