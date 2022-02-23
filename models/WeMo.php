@@ -115,6 +115,7 @@ class WeMoLights extends clsModel {
     public static function SaveWeMo(array $data, $remote_data = false){
         $sensors = WeMoLights::GetInstance();
         $data = $sensors->CleanData($data);
+        if($data['state'] == "-1") unset($data['state']);
         if(isset($data['name'])){
             $data['type'] = WeMoLights::WeMoType($data);
             $data['subtype'] = WeMoLights::WeMoSubType($data);    

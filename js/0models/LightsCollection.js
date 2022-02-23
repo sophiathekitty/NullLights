@@ -4,7 +4,7 @@ class LightsCollection extends Collection {
     constructor(debug = LightsCollection.debug_lights){
         if(debug) console.log("LightsCollection::Constructor");
         super("lights","light","/plugins/NullLights/api/light","/plugins/NullLights/api/light/save","mac_address","collection_",debug);
-        this.pull_delay = 10000;
+        this.pull_delay = 0;
     }
     /**
      * get the lights for a room
@@ -31,13 +31,14 @@ class LightsCollection extends Collection {
         console.log("LightsCollection::ToggleLight",mac_address);
         LightsCollection.instance.getItem(mac_address,light=>{
             console.log("LightsCollection::ToggleLight:getItem",mac_address,light);
-            if(light.state == 0){
+            if(Number(light.state) == 0){
                 light.target_state = 1;
             } else {
                 light.target_state = 0;
             }
-            LightsCollection.instance.setItem(light);
-            LightsCollection.instance.pushData(callBack,errorCallback,errorCallback,doneCallback);
+            console.log("LightsCollection::ToggleLight:getItem",mac_address,light.state,"->",light.target_state);
+            LightsCollection.instance.setItem(light,doneCallback);
+            //LightsCollection.instance.pushData(callBack,errorCallback,errorCallback,doneCallback);
         });
     }
     /**
@@ -50,8 +51,8 @@ class LightsCollection extends Collection {
     static setLightState(mac_address,state,callBack,errorCallback){
         LightsCollection.instance.getItem(mac_address,light=>{
             light.target_state = state;
-            LightsCollection.instance.setItem(light);
-            LightsCollection.instance.pushData(callBack,errorCallback,errorCallback);
+            LightsCollection.instance.setItem(light,callBack);
+            //LightsCollection.instance.pushData(callBack,errorCallback,errorCallback);
         });
     }
 }
