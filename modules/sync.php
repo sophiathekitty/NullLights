@@ -5,6 +5,7 @@ class WeMoSync {
      * @return bool returns true if do_we_observe is set to "yes" or if this is the hub server
      */
     private static function DoWeMoObserve(){
+        Debug::Trace("WeMoSync::DoWeMoObserve");
         switch(Settings::LoadSettingsVar('do_wemo_observe','auto')){
             case "yes":
                 return true;
@@ -17,14 +18,17 @@ class WeMoSync {
      * observe the wemo states
      */
     public static function Observe(){
+        Debug::Trace("WeMoSync::Observe");
+        Services::Start("NullLights::WeMoSync::Observe");
         if(WeMoSync::DoWeMoObserve()){
-            Settings::SaveSettingsVar("service::ObserveLights","python ".date("H:i:s"));
+            //Settings::SaveSettingsVar("service::ObserveLights","observer ".date("H:i:s"));
+            Services::Log("NullLights::WeMoSync::Observe","WeMo::Observe -- start");
             // do wemo observe python command
             WeMo::Observe();
+            Services::Log("NullLights::WeMoSync::Observe","WeMo::Observe -- done");
             WeMo::Log();
         } else {
-            Settings::SaveSettingsVar("service::ObserveLights","hub ".date("H:i:s"));
-            echo "\nDo pull from hub?\n";
+            Debug::Log("Do pull from hub?");
             WeMoSync::PullLightsFromHub();
         }
         // cache room_light_on
@@ -35,15 +39,16 @@ class WeMoSync {
             foreach($lights as $light){
                 if((int)$light['state'] == 1 && $light['type'] == "light") $on = 1;
             }
-            echo "room: ".$room['name']." $on\n";
+            Debug::Log("room: ".$room['name']." $on");
             Rooms::SaveRoom(['id'=>$room['id'],"lights_on_in_room"=>$on]);
         }
+        Services::Complete("NullLights::WeMoSync::Observe");
     }
     /**
      * pulls the lights from the hub
      */
     public static function PullLightsFromHub(){
-        echo "WeMoSync::PullLightsFromHub\n";
+        Debug::Trace("WeMoSync::PullLightsFromHub");
         if(Servers::IsHub()) return null;
         $hub = Servers::GetHub();
         if(is_null($hub)) return null;
@@ -51,13 +56,16 @@ class WeMoSync {
         $url = "plugins/NullLights/api/light";
         if($hub['type'] == "old_hub") $url = "/api/light";
         $lights = ServerRequests::LoadHubJSON($url);
-        print_r($lights);
-        Settings::SaveSettingsVar("service::PullLights",count($lights)."|".date("H:i:s"));
+        Debug::Log("WeMoSync::PullLightsFromHub--remote lights",$lights);
+        Services::Log("NullLights::WeMoSync::Observe","WeMoSync::PullLightsFromHub -- ".count($lights));
+        //Settings::SaveSettingsVar("service::PullLights",count($lights)."|".date("H:i:s"));
         foreach($lights["lights"] as $light){
             $save = WeMoLights::SaveWeMo($light,true);
-            print_r($save);
+            Debug::Log("WeMoSync::PullLightsFromHub--save",$save);
+            Services::Log("NullLights::WeMoSync::Observe",$light['name']." ".$light['state']);
             WeMoLogs::SaveLog($light);
         }
+        Debug::Log("WeMoSync::PullLightsFromHub--local lights",WeMoLights::AllLights());
     }
     /**
      * checks if a host is a wemo and saves it to the wemo table if it is
