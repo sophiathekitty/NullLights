@@ -3,8 +3,12 @@
  * module for creating archives from logs and deep archives from archives
  */
 class WeMoArchiver {
+    /**
+     * archive yesterday?
+     */
     public static function ArchiveYesterday($wemo){
-        $chart = WeMoChart::HourlyWeMoLog($wemo['mac_address']);
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"ArchiveYesterday");
+        return WeMoArchiver::ArchiveWeMoLogsYesterday($wemo['mac_address']);
     }
     /**
      * converts an hourly chart to an archive
@@ -12,6 +16,7 @@ class WeMoArchiver {
      * @return array returns the data object for the archive
      */
     public static function HourlyToArchive(array $hourly){
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"HourlyToArchive");
         $archive = [];
         for($i = 0; $i < 24; $i++){
             $archive["h$i"] = $hourly[$i]['average'];
@@ -25,6 +30,7 @@ class WeMoArchiver {
      * @return array the hourly chart array
      */
     public static function ArchiveToHourly(array $archive, $hourly = null){
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"ArchiveToHourly");
         if(is_null($hourly)) $hourly = WeMoChart::EmptyHourly();
         for($i = 0; $i < 24; $i++){
             $hourly[$i]['average_a'] = $archive["h$i"];
@@ -37,6 +43,7 @@ class WeMoArchiver {
      * @return array returns the save report
      */
     public static function ArchiveWeMoLogsToday($mac_address){
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"ArchiveWeMoLogsToday $mac_address");
         return WeMoArchiver::ArchiveWeMoLogsDate($mac_address,date("Y-m-d"));
     }
     /**
@@ -45,6 +52,7 @@ class WeMoArchiver {
      * @return array returns the save report
      */
     public static function ArchiveWeMoLogsYesterday($mac_address){
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"ArchiveWeMoLogsYesterday $mac_address ".date("Y-m-d",time()-DaysToSeconds(1)));
         return WeMoArchiver::ArchiveWeMoLogsDate($mac_address,date("Y-m-d",time()-DaysToSeconds(1)));
     }
     /**
@@ -54,6 +62,7 @@ class WeMoArchiver {
      * @return array returns the save report
      */
     public static function ArchiveWeMoLogsDate($mac_address,$date){
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"ArchiveWeMoLogsDate $mac_address,$date");
         $log = WeMoChart::HourlyWeMoLogDate($mac_address,$date);
         $errors = 0;
         foreach($log as $l){
@@ -62,7 +71,11 @@ class WeMoArchiver {
         //print_r($log);
         $archive = WeMoArchiver::HourlyToArchive($log);
         $archive['mac_address'] = $mac_address;
-        return WeMoArchives::SaveLog($archive);
+        $archive['errors'] = $errors;
+        $res = WeMoArchives::SaveLog($archive);
+        Debug::Log("WeMoArchives::SaveLog",$res);
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"ArchiveWeMoLogsDate err? ".$res['error']);
+        return $res;
     }
     /**
      * make a deep archive from a month's archive
@@ -70,10 +83,12 @@ class WeMoArchiver {
      * @param string $month the month to be deep archived
      */
     public static function DeepArchiveWeMoArchiveMonth($mac_address,$month){
+        if(defined("ARCHIVE_SERVICE"))Services::Log("WeMoArchiver::DeepArchive","DeepArchiveWeMoArchiveMonth $mac_address,$month");
         $archive = WeMoArchives::Month($mac_address,$month);
         $week = [];
         foreach($archive as $day){
             $day_of_week = date("N",strtotime($day['created']));
+            if(defined("ARCHIVE_SERVICE"))Services::Log("WeMoArchiver::DeepArchive","DeepArchiveWeMoArchiveMonth--day_of_week $day_of_week");
             if(isset($week[$day_of_week])){
                 $week[$day_of_week]['count']++;
                 $week[$day_of_week]['day'] = WeMoArchiver::WeMoArchiveAddHours($week[$day_of_week]['day'],$day);
@@ -97,6 +112,7 @@ class WeMoArchiver {
      * @return array the average archive of the archives
      */
     public static function CalculateWeMoArchiveAverageHours($archives){
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"CalculateWeMoArchiveAverageHours");
         $archive = $archives[0];
         for($i = 1; $i < count($archives); $i++){
             $archive = WeMoArchiver::WeMoArchiveAddHours($archive,$archives[$i]);
@@ -110,6 +126,7 @@ class WeMoArchiver {
      * @return array the archives added together
      */
     private static function WeMoArchiveAddHours($a,$b){
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"WeMoArchiveAddHours");
         for($h = 0; $h < 24; $h++){
             $a["h$h"] += $b["h$h"];
         }    
@@ -123,6 +140,7 @@ class WeMoArchiver {
      * @return array the averaged archive
      */
     private static function WeMoArchiveAverageHours($a, $count){
+        if(defined("ARCHIVE_SERVICE"))Services::Log(constant("ARCHIVE_SERVICE"),"WeMoArchiveAverageHours");
         for($h = 0; $h < 24; $h++){
             $a["h$h"] = $a["h$h"]/$count;
         }    

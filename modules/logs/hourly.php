@@ -5,11 +5,12 @@ class WeMoChart {
      * @return array an empty hourly chart
      */
     public static function EmptyHourly(){
+        Debug::Trace("WeMoChart::EmptyHourly");
         $hourly = [];
         for($i = 0; $i < 24; $i++){
             $h = (string)$i;
             if($i < 10) $h = "0$i";
-            $hourly[] = ['hour'=>$h];
+            $hourly[] = ['hour'=>$h,'on'=>0,'off'=>0,'error'=>0,'count'=>0];
         }
     }
     /**
@@ -18,9 +19,11 @@ class WeMoChart {
      * @return array list of lights and their hourly charts
      */
     public static function HourlyWeMoRoomLog($room_id){
-        $lights = WeMoLights::RoomLights($room_id);
+        Debug::Trace("WeMoChart::HourlyWeMoRoomLog");
+        $lights = WeMoLights::RoomWeMos($room_id);
         $logs = [];
         foreach($lights as $light){
+            //$all = WeMoLogs::MacAddress($light['mac_address']);
             array_push($logs,["light"=>$light,"hourly"=>WeMoChart::HourlyWeMoLog($light['mac_address'])]);
         }
         return $logs;
@@ -31,10 +34,11 @@ class WeMoChart {
      * @return array a detailed hourly chart
      */
     public static function HourlyWeMoLog($mac_address){
+        Debug::Trace("WeMoChart::HourlyWeMoLog");
         $where = "`mac_address` = '$mac_address'";
         $light = WemoLights::MacAddress($mac_address);
         $log = WeMoChart::WeMoDayData($where);
-        $archive = WeMoArchiver::CalculateWeMoArchiveAverageHours(WeMoArchives::Recent($mac_address,Settings::LoadSettingsVar("weather_log_days",5)));
+        $archive = WeMoArchiver::CalculateWeMoArchiveAverageHours(WeMoArchives::Recent($mac_address,Settings::LoadSettingsVar("wemo_archive_chart_days",5)));
         $log = WeMoChart::WemoCombineArchiveWithLog($archive,$log);
         for($i = 0; $i < count($log); $i++){
             $alpha = round($log[$i]['average'] * 0.9,3);
@@ -53,9 +57,15 @@ class WeMoChart {
      * @return array the hourly chart with the archive added
      */
     public static function WemoCombineArchiveWithLog($archive,$log){    // archive data
+        Debug::Trace("WeMoChart::WemoCombineArchiveWithLog");
         for($i = 0; $i < 24; $i++){
             $log[$i]['average_a'] = ($log[$i]['average']+$archive["h$i"])/2;
             $log[$i]['archive'] = $archive["h$i"];
+            $h = (string)$i;
+            if($i < 10) $h = "0$i";
+            $log[$i]['hour'] = $h;
+            if(is_nan($log[$i]['archive'])) $log[$i]['archive'] = $log[$i]['average'];
+            if(is_nan($log[$i]['average_a'])) $log[$i]['average_a'] = $log[$i]['average'];
         }
         return $log;
     }
@@ -66,9 +76,12 @@ class WeMoChart {
      * @return array the hourly chart for the specified date
      */
     public static function HourlyWeMoLogDate($mac_address,$date){
+        Debug::Trace("WeMoChart::HourlyWeMoLogDate");
         $where = "`mac_address` = '$mac_address' AND `created` BETWEEN '$date 00:00:00' AND '$date 23:59:59'";
         $light = WeMoLights::MacAddress($mac_address);
         $log = WeMoChart::WeMoDayData($where);
+        $logs = WeMoLogs::MacAddress($mac_address);
+        
         for($i = 0; $i < count($log); $i++){
             $alpha = round($log[$i]['average'] * 0.9,3);
             $log[$i]['color'] = "rgba(".$light['color'].",".$alpha.")";
@@ -81,11 +94,27 @@ class WeMoChart {
      * @return array returns hourly data for day
      */
     private static function WemoDayData($where){
-        $day = [];
-        for($h = 0; $h < 24; $h++){
-            $day[$h] = WeMoChart::HourlyWeMoData($where,$h);
+        Debug::Trace("WeMoChart::WemoDayData");
+        $logs = WeMoLogs::Where($where);
+        $chart = WeMoChart::EmptyHourly();
+        foreach($logs as $log){
+            $h = (int)date("G",strtotime($log['created']));
+            /*
+            if(!isset($chart[(int)$h]['on'])) $chart[(int)$h]['on'] = 0;
+            if(!isset($chart[(int)$h]['off'])) $chart[(int)$h]['off'] = 0;
+            if(!isset($chart[(int)$h]['error'])) $chart[(int)$h]['error'] = 0;
+            */
+            $chart[$h]['count']++;
+            $chart[$h]['on'] += $log['state'];
+            $chart[$h]['error'] += $log['error'];
         }
-        return $day;
+        //$day = [];
+        for($h = 0; $h < 24; $h++){
+            //$day[$h] = WeMoChart::HourlyWeMoData($where,$h);
+            if($chart[$h]['count']) $chart[$h]['average'] = $chart[$h]['on'] / $chart[$h]['count'];
+            $chart[$h]['off'] = $chart[$h]['count'] - $chart[$h]['on'];
+        }
+        return $chart;
     }
     /**
      * gets hour data for a date
@@ -94,26 +123,15 @@ class WeMoChart {
      * @return array the hour data array
      */
     private static function HourlyWeMoData($where,$hour){
-        if($hour < 10) $hour = "0".$hour;
+        Debug::Trace("WeMoChart::HourlyWeMoData");
         $table = WeMoLogs::HourWhere($where,$hour);
+        if($hour < 10) $hour = "0".$hour;
         $data = ['hour'=>$hour,'on' => 0, 'off' => 0, 'error' => 0];
         foreach($table as $row){
-            switch($row['state']){
-                case 0:
-                case "0":
-                    $data['off']++;
-                break;
-                case 1:
-                case "1":
-                    $data['on']++;
-                break;
-                case 2:
-                case "2":
-                    $data['error']++;
-                break;
-            }
+            $data['on'] += $row['state'];
             if($row['error']) $data['error']++;
         }
+        $data['off'] = count($table) - $data['on'];
         $data['average'] = 0;
         if($data['on'] > $data['off']){
             $data['state'] = 'on';

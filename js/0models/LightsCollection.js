@@ -28,7 +28,7 @@ class LightsCollection extends Collection {
      * @param {function(*)} doneCallback 
      */
     static toggleLight(mac_address,callBack,errorCallback,doneCallback){
-        console.log("LightsCollection::ToggleLight",mac_address);
+        if(this.debug) console.info("LightsCollection::ToggleLight",mac_address);
         LightsCollection.instance.getItem(mac_address,light=>{
             console.log("LightsCollection::ToggleLight:getItem",mac_address,light);
             if(Number(light.state) == 0){
@@ -36,7 +36,7 @@ class LightsCollection extends Collection {
             } else {
                 light.target_state = 0;
             }
-            console.log("LightsCollection::ToggleLight:getItem",mac_address,light.state,"->",light.target_state);
+            if(this.log) console.log("LightsCollection::ToggleLight:getItem",mac_address,light.state,"->",light.target_state);
             LightsCollection.instance.setItem(light,doneCallback);
             //LightsCollection.instance.pushData(callBack,errorCallback,errorCallback,doneCallback);
         });

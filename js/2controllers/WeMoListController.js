@@ -5,10 +5,11 @@ class WeMoListController extends Controller {
     }
     ready(){
         if(this.debug){
-            console.log("WeMoListController::Ready");
+            console.log("WeMoListController::Ready",$("ul#wemos").length);
         }
+        //if($("ul#wemos").length == 0) return;
         this.view.build();
-        this.interval = setInterval(this.refresh.bind(this),20000);
+        this.interval = setInterval(this.refresh.bind(this),60000);
         this.click("ul#wemos","a",e=>{
             e.preventDefault();
             var mac_address = $(e.currentTarget).attr("mac_address");

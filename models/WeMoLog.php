@@ -40,46 +40,50 @@ class WeMoLogs extends clsModel {
             'Extra'=>""
         ]
     ];
-    private static $sensors = null;
-    private static function GetInstance(){
-        if(is_null(WeMoLogs::$sensors)) WeMoLogs::$sensors = new WeMoLogs();
-        return WeMoLogs::$sensors;
+    private static $instance = null;
+    private static function GetInstance():WeMoLogs{
+        if(is_null(WeMoLogs::$instance)) WeMoLogs::$instance = new WeMoLogs();
+        return WeMoLogs::$instance;
     }
     public static function AddLog(string $mac_address, int $state){
         WeMoLogs::SaveLog(['mac_address'=>$mac_address,'state'=>$state]);
     }
     public static function SaveLog(array $data){
-        $sensors = WeMoLogs::GetInstance();
-        $sensors->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('wemo_log_days',2)));
-        $data = $sensors->CleanData($data);
+        $instance = WeMoLogs::GetInstance();
+        $instance->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('wemo_log_days',1)));
+        $data = $instance->CleanData($data);
         $data['guid'] = md5($data['mac_address'].date("Y-m-d H:i:s").$data['state']);
-        return $sensors->Save($data);
+        return $instance->Save($data);
     }
     public static function MacAddress($mac_address){
-        $sensors = WeMoLogs::GetInstance();
-        return $sensors->LoadWhere(['mac_address'=>$mac_address]);
+        $instance = WeMoLogs::GetInstance();
+        return $instance->LoadWhere(['mac_address'=>$mac_address]);
     }
     public static function Recent($mac_address,$seconds){
-        $sensors = WeMoLogs::GetInstance();
-        return $sensors->LoadWhereFieldAfter(['mac_address'=>$mac_address],'created',date("Y-m-d H:i:s",time()-$seconds));
+        $instance = WeMoLogs::GetInstance();
+        return $instance->LoadWhereFieldAfter(['mac_address'=>$mac_address],'created',date("Y-m-d H:i:s",time()-$seconds));
     }
     public static function Hour($mac_address,$hour){
-        $sensors = WeMoLogs::GetInstance();
-        return $sensors->LoadFieldHourWhere("`mac_address` = '$mac_address'",'created',$hour);
+        $instance = WeMoLogs::GetInstance();
+        return $instance->LoadFieldHourWhere("`mac_address` = '$mac_address'",'created',$hour);
     }
     public static function HourWhere($where,$hour){
-        $sensors = WeMoLogs::GetInstance();
-        return $sensors->LoadFieldHourWhere($where,'created',$hour);
+        $instance = WeMoLogs::GetInstance();
+        return $instance->LoadFieldHourWhere($where,'created',$hour);
+    }
+    public static function Where($where){
+        $instance = WeMoLogs::GetInstance();
+        return clsDB::$db_g->select("SELECT * FROM `".$instance->table_name."` WHERE $where;");
     }
     public static function LastOn($mac_address){
-        $sensors = WeMoLogs::GetInstance();
-        $sensors = new clsModel();
-        return $sensors->LoadWhere(['mac_address'=>$mac_address,"state"=>1],['created'=>'DESC']);
+        $instance = WeMoLogs::GetInstance();
+        $instance = new clsModel();
+        return $instance->LoadWhere(['mac_address'=>$mac_address,"state"=>1],['created'=>'DESC']);
     }
     public static function LastOff($mac_address){
-        $sensors = WeMoLogs::GetInstance();
-        $sensors = new clsModel();
-        return $sensors->LoadWhere(['mac_address'=>$mac_address,"state"=>0],['created'=>'DESC']);
+        $instance = WeMoLogs::GetInstance();
+        $instance = new clsModel();
+        return $instance->LoadWhere(['mac_address'=>$mac_address,"state"=>0],['created'=>'DESC']);
     }
 }
 if(defined('VALIDATE_TABLES')){

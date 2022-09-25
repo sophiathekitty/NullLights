@@ -1,0 +1,20 @@
+.charts .lights_chart.simple {
+    height: 1em;
+    position: relative;
+    flex-direction: row !important;
+    flex-flow: nowrap;
+}
+.charts .lights_chart.simple div.hour {
+    flex-direction: column;
+    background-color: #333333;
+    border-left: #000 solid thin;
+}
+.charts .lights_chart.simple div.hour:first-of-type {
+    border-left: none;
+}
+
+.charts .lights_chart.simple .hour .light {
+    /*height: 0.5em;*/
+    margin: 0em;
+    background-image: none !important;
+}
