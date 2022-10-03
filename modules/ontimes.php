@@ -1,13 +1,26 @@
 <?php
-
+/**
+ * get the room's lights with some extra info added
+ * @param int $room_id the room's id
+ * @return array array of lights with extra info
+ */
 function RoomLightsStamps($room_id){
     $lights = WeMoLights::RoomLights($room_id);
     return ParseLightStampStats($lights);
 }
+/**
+ * get all the lights with some extra info added
+ * @return array array of all the lights with some extra info added
+ */
 function AllLightsStamps(){
     $lights = WeMoLights::AllLights();
     return ParseLightStampStats($lights);
 }
+/**
+ * adds isLight, mode, on_time, and error_percent to lights in array
+ * @param array $lights an array of lights
+ * @return array the $lights array but now the lights have extra info added
+ */
 function ParseLightStampStats($lights){
     for($i = 0; $i < count($lights); $i++){
         $lights[$i]['isLight'] = IsALight($lights[$i]);
@@ -20,12 +33,23 @@ function ParseLightStampStats($lights){
     }
     return $lights;
 }
+/**
+ * returns true if light is a light
+ * @param array $light the light data array needs $light['name']
+ * @return bool returns false if not a light
+ */
 function IsALight($light){
     if(strpos(strtoupper($light['name']),'WINDOW FAN') > -1) return false;
     if(strpos(strtoupper($light['name']),'LAVA BUBBLES') > -1) return false;
     if(strpos(strtoupper($light['name']),'PINK STARS') > -1) return false;
     return true;
 }
+/**
+ * see if the lights are on in the room
+ * @note uses room's lights_on_in_room value if the room has been modified recently
+ * @param int $room_id room's id
+ * @return bool true if any of the lights are on in room
+ */
 function LightsOnInRoom($room_id){
     $room = Rooms::RoomId($room_id);
     if(isset($room['modified']) && !is_null($room['modified'])){
@@ -41,8 +65,15 @@ function LightsOnInRoom($room_id){
     }
     $room['lights_on_in_room'] = 0;
     Rooms::SaveRoom($room);
-return false;
+    return false;
 }
+/**
+ * see if the lights are on in the room's neighbors
+ * @note uses room's lights_on_in_neighbors value if the room has been modified recently
+ * @param int $room_id room's id
+ * @return bool true if any of the lights are on in room's neighbors
+ */
+
 function LightsOnInNeighbors($room_id){
     $room = Rooms::RoomId($room_id);
     if(isset($room['modified']) && !is_null($room['modified'])){
@@ -60,7 +91,11 @@ function LightsOnInNeighbors($room_id){
     Rooms::SaveRoom($room);
     return false;
 }
-
+/**
+ * get the number of the room's neighbors that have at least one light on
+ * @param int $room_id room's id
+ * @return int the number of neighbors with lights on
+ */
 function LightsOnInNeighborsCount($room_id){
     $neighbors = RoomNeighbors::Neighbors($room_id);
     $count = 0;

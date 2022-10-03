@@ -31,6 +31,7 @@ class WeMo {
         } else if(WeMo::SetBinaryState($wemo,$wemo['target_state'])){
             $wemo['state'] = $wemo['target_state'];
             $wemo['target_state'] = -1;
+            ManualLogs::SaveLog($wemo);
         }
         
         WeMoLights::SaveWeMo($wemo);
@@ -47,6 +48,10 @@ class WeMo {
                 $wemo['error'] = 1;
             } else {
                 $wemo['error'] = 0;
+                if($wemo['state'] != $current_state){
+                    // wemo has changed state
+                    ManualLogs::SaveLog($wemo);
+                }
                 $wemo['state'] = $current_state;
             }
             if($wemo['state'] == $wemo['target_state']){

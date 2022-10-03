@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * first level of light archives. archiving the hourly chart for the wemos so we can
+ * track when they are on during the day should try to keep a months worth of these for
+ * doing the final level of archiving
+ */
 class WeMoArchives extends clsModel {
     public $table_name = "WeMoArchives";
     public $fields = [

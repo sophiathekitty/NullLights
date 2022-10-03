@@ -1,4 +1,7 @@
 <?php
+/**
+ * this is going to be what handles running the rules... needs testing
+ */
 class AutomationRuleHandler {
     /**
      * converts conditions string into a json array

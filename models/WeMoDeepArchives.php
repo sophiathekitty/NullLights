@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * this if for having an idea of when a light tends to be on each month by day of week.
+ * the idea being that we tend to do different stuff on different days of the week and
+ * during different seasons of the year
+ * @todo needs static load functions
+ */
 class WeMoDeepArchives extends clsModel {
     public $table_name = "WeMoDeepArchives";
     public $fields = [
@@ -209,10 +214,17 @@ class WeMoDeepArchives extends clsModel {
         ]
     ];
     private static $sensors = null;
-    private static function GetInstance(){
+    /**
+     * @return WeMoDeepArchives|clsModel
+     */
+    private static function GetInstance():WeMoDeepArchives{
         if(is_null(WeMoDeepArchives::$sensors)) WeMoDeepArchives::$sensors = new WeMoDeepArchives();
         return WeMoDeepArchives::$sensors;
     }
+    /**
+     * save a deep archive
+     * @param array $data the data array for the wemo archive to be saved
+     */
     public static function SaveLog(array $data){ 
         $sensors = WeMoDeepArchives::GetInstance();
         $data = $sensors->CleanData($data);

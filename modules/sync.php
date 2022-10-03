@@ -60,6 +60,8 @@ class WeMoSync {
         Services::Log("NullLights::WeMoSync::Observe","WeMoSync::PullLightsFromHub -- ".count($lights));
         //Settings::SaveSettingsVar("service::PullLights",count($lights)."|".date("H:i:s"));
         foreach($lights["lights"] as $light){
+            $l = WeMoLights::MacAddress($light['mac_address']);
+            if($l['state'] != $light['state']) ManualLogs::SaveLog($light);
             $save = WeMoLights::SaveWeMo($light,true);
             Debug::Log("WeMoSync::PullLightsFromHub--save",$save);
             Services::Log("NullLights::WeMoSync::Observe",$light['name']." ".$light['state']);
