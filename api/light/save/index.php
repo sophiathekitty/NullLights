@@ -5,6 +5,7 @@ if(isset($_GET['lights'])){
     $data['get_lights'] = $_GET['lights'];
     foreach($_GET['lights'] as $light){
         WeMoLights::SaveWeMo($light);
+        WeMo::SetState($light);
     }
     WeMo::Observe();
     $data['lights'] = WeMoLights::AllLights();
