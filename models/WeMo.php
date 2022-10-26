@@ -151,6 +151,7 @@ class WeMoLights extends clsModel {
      * @return string light, fan, other
      */
     public static function WeMoType($wemo){
+        if(strpos(strtolower($wemo['name']),"blacklight") > -1) return "blacklight";
         if(strpos(strtolower($wemo['name']),"light") > -1) return "light";
         if(strpos(strtolower($wemo['name']),"lamp") > -1) return "light";
         if(strpos(strtolower($wemo['name']),"ambient") > -1) return "light";
@@ -163,7 +164,9 @@ class WeMoLights extends clsModel {
      * @return string lava, ambient, mood, lamp, inquisition, stars, window, other
      */
     public static function WeMoSubType($wemo){
+        if(strpos(strtolower($wemo['name']),"painting") > -1) return "painting";
         if(strpos(strtolower($wemo['name']),"lava") > -1) return "lava";
+        if(strpos(strtolower($wemo['name']),"rope") > -1) return "rope";
         if(strpos(strtolower($wemo['name']),"ambient") > -1) return "ambient";
         if(strpos(strtolower($wemo['name']),"mood") > -1) return "mood";
         if(strpos(strtolower($wemo['name']),"lamp") > -1) return "lamp";
