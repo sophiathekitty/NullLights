@@ -76,7 +76,7 @@ class WeMoLogs extends clsModel {
      */
     public static function MacAddress($mac_address){
         $instance = WeMoLogs::GetInstance();
-        return $instance->LoadWhere(['mac_address'=>$mac_address]);
+        return $instance->LoadAllWhere(['mac_address'=>$mac_address],['created'=>'DESC']);
     }
     /**
      * gets recent logs 
@@ -124,7 +124,6 @@ class WeMoLogs extends clsModel {
      */
     public static function LastOn($mac_address){
         $instance = WeMoLogs::GetInstance();
-        $instance = new clsModel();
         return $instance->LoadWhere(['mac_address'=>$mac_address,"state"=>1],['created'=>'DESC']);
     }
     /**
@@ -134,7 +133,6 @@ class WeMoLogs extends clsModel {
      */
     public static function LastOff($mac_address){
         $instance = WeMoLogs::GetInstance();
-        $instance = new clsModel();
         return $instance->LoadWhere(['mac_address'=>$mac_address,"state"=>0],['created'=>'DESC']);
     }
 }

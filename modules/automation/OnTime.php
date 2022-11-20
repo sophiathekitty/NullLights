@@ -9,6 +9,7 @@ class WemoTime {
         $on_time = strtotime($last_on['created']);
         $off_time = strtotime($last_off['created']);
         $time = $on_time - $off_time;
+        Debug::Log("WemoTime::OnTimeCalculate",$last_on,$last_off,"$on_time - $off_time == $time",$wemo);
         //echo "$last_on - $last_off == $on_time - $off_time == $time <br>";
         return $time;            
     }
@@ -24,8 +25,8 @@ class WemoTime {
     }
     /**
      * how long a light has been off consecutively
-     * @param {Array} $wemo WeMoLight data array
-     * @return {int} time in seconds
+     * @param array $wemo WeMoLight data array
+     * @return int time in seconds
      */
     public static function OffTime($wemo){
         $time = WemoTime::OnTimeCalculate($wemo) * -1;
@@ -34,8 +35,8 @@ class WemoTime {
     }
     /**
      * how long a light has been on consecutively in minutes
-     * @param {Array} $wemo WeMoLight data array
-     * @return {float} time in minutes
+     * @param array $wemo WeMoLight data array
+     * @return float time in minutes
      */
     public static function OnMinutes($wemo){
         $time = WemoTime::OnTime($wemo);
@@ -43,8 +44,8 @@ class WemoTime {
     }
     /**
      * how long a light has been off consecutively in minutes
-     * @param {Array} $wemo WeMoLight data array
-     * @return {float} time in minutes
+     * @param array $wemo WeMoLight data array
+     * @return float time in minutes
      */
     public static function OffMinutes($wemo){
         $time = WemoTime::OffTime($wemo);
@@ -52,8 +53,8 @@ class WemoTime {
     }
     /**
      * how long a light has been on consecutively in hours
-     * @param {Array} $wemo WeMoLight data array
-     * @return {float} time in hours
+     * @param array $wemo WeMoLight data array
+     * @return float time in hours
      */
     public static function OnHours($wemo){
         $time = WemoTime::OnTime($wemo);
@@ -61,8 +62,8 @@ class WemoTime {
     }
     /**
      * how long a light has been off consecutively in hours
-     * @param {Array} $wemo WeMoLight data array
-     * @return {float} time in hours
+     * @param array $wemo WeMoLight data array
+     * @return float time in hours
      */
     public static function OffHours($wemo){
         $time = WemoTime::OffTime($wemo);
@@ -70,8 +71,8 @@ class WemoTime {
     }
     /**
      * how long a light has been on consecutively in days
-     * @param {Array} $wemo WeMoLight data array
-     * @return {float} time in days
+     * @param array $wemo WeMoLight data array
+     * @return float time in days
      */
     public static function OnDays($wemo){
         $time = WemoTime::OnTime($wemo);
@@ -79,8 +80,8 @@ class WemoTime {
     }
     /**
      * how long a light has been off consecutively in days
-     * @param {Array} $wemo WeMoLight data array
-     * @return {float} time in days
+     * @param array $wemo WeMoLight data array
+     * @return float time in days
      */
     public static function OffDays($wemo){
         $time = WemoTime::OffTime($wemo);
@@ -88,8 +89,8 @@ class WemoTime {
     }
     /**
      * the cumulative time a light has been on during a time window
-     * @param {Array} $wemo WeMoLight data array
-     * @param {Array} $time time window to check in seconds
+     * @param array $wemo WeMoLight data array
+     * @param array $time time window to check in seconds
      * @return {int|float} time in seconds
      */
     public static function OnDuringTime($wemo,$time){
@@ -113,7 +114,7 @@ class WemoTime {
     }
     /**
      * how long the lights have been on in room
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      * 
      */
     public static function RoomOnTime($wemo){
@@ -127,7 +128,7 @@ class WemoTime {
     }
     /**
      * how long the lights have been off in room
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      */
     public static function RoomOffTime($wemo){
         $lights = WeMoLights::RoomLights($wemo['room_id']);
@@ -141,7 +142,7 @@ class WemoTime {
     }
     /**
      * how long the lights have been on in room
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      * 
      */
     public static function NeighborsOnTime($wemo){
@@ -155,7 +156,7 @@ class WemoTime {
     }
     /**
      * how long the lights have been off in room
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      */
     public static function NeighborsOffTime($wemo){
         $neighbors = RoomNeighbors::Neighbors($wemo['room_id']);
@@ -169,7 +170,7 @@ class WemoTime {
     }
     /**
      * check if a room has a lamp on
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      * @return bool returns true if room has lamp light on
      */
     public static function RoomLampIsOn($wemo){
@@ -183,7 +184,7 @@ class WemoTime {
     }
     /**
      * check if a room has a mood light on
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      * @return bool returns true if room has mood light on
      */
     public static function RoomMoodIsOn($wemo){
@@ -197,7 +198,7 @@ class WemoTime {
     }
     /**
      * how long the lamp has been on in a room
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      * @return float time in seconds
      */
     public static function RoomLampOnTime($wemo){
@@ -211,7 +212,7 @@ class WemoTime {
     }
     /**
      * how long the lamp has been on in a room
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      * @return float time in seconds
      */
     public static function RoomLampOffTime($wemo){
@@ -226,7 +227,7 @@ class WemoTime {
     }
     /**
      * how long the lamp has been on in a room
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      * @return float time in seconds
      */
     public static function RoomMoodOnTime($wemo){
@@ -240,7 +241,7 @@ class WemoTime {
     }
     /**
      * how long the lamp has been on in a room
-     * @param {Array} $wemo WeMoLight data array
+     * @param array $wemo WeMoLight data array
      * @return float time in seconds
      */
     public static function RoomMoodOffTime($wemo){
