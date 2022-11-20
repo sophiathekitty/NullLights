@@ -25,7 +25,7 @@ function CreateLightsTestData(){
         // create fake lights
         Faker::FakeData("WeMoLights",[
             'mac_address'=>'room1:lamp',
-            'name'=>'light 1',
+            'name'=>'light 1 lamp',
             'url'=>'localhost',
             'port'=>'5000',
             'room_id'=>101,
@@ -35,7 +35,7 @@ function CreateLightsTestData(){
         ]);
         Faker::FakeData("WeMoLights",[
             'mac_address'=>'room1:mood',
-            'name'=>'light 2',
+            'name'=>'light 2 mood',
             'url'=>'localhost',
             'port'=>'5000',
             'room_id'=>101,
@@ -45,7 +45,7 @@ function CreateLightsTestData(){
         ]);
         Faker::FakeData("WeMoLights",[
             'mac_address'=>'room2:ambient',
-            'name'=>'light 3',
+            'name'=>'light 3 ambient',
             'url'=>'localhost',
             'port'=>'5000',
             'room_id'=>102,
@@ -55,7 +55,7 @@ function CreateLightsTestData(){
         ]);
         Faker::FakeData("WeMoLights",[
             'mac_address'=>'room3:lamp',
-            'name'=>'light 4',
+            'name'=>'light 4 lamp',
             'url'=>'localhost',
             'port'=>'5000',
             'room_id'=>103,
@@ -65,7 +65,7 @@ function CreateLightsTestData(){
         ]);
         Faker::FakeData("WeMoLights",[
             'mac_address'=>'room4:lamp',
-            'name'=>'light 5',
+            'name'=>'light 5 lamp',
             'url'=>'localhost',
             'port'=>'5000',
             'room_id'=>104,
@@ -75,7 +75,7 @@ function CreateLightsTestData(){
         ]);
         Faker::FakeData("WeMoLights",[
             'mac_address'=>'room4:mood',
-            'name'=>'light 6',
+            'name'=>'light 6 mood',
             'url'=>'localhost',
             'port'=>'5000',
             'room_id'=>104,
@@ -107,6 +107,10 @@ function CreateLightsTestData(){
             Faker::FakeLogData("WeMoLogs","created",60,date("Y-m-d H:i:s",time()-MinutesToSeconds(5)),date("Y-m-d H:i:s",time()-MinutesToSeconds(7)),[
                 'mac_address'=>'room1:lamp',
                 'state'=>0
+            ],true);
+            Faker::FakeLogData("WeMoLogs","created",60,date("Y-m-d H:i:s",time()-MinutesToSeconds(7)),date("Y-m-d H:i:s",time()-MinutesToSeconds(10)),[
+                'mac_address'=>'room1:lamp',
+                'state'=>1
             ],true);
             
             /**

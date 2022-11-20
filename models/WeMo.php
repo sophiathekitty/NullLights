@@ -189,6 +189,7 @@ class WeMoLights extends clsModel {
      * @return array list of wemo data arrays
      */
     public static function RoomLights($room_id,$subtype = null){
+        //Debug::Log("WeMoLights::RoomLights",$room_id,$subtype);
         return WeMoLights::RoomWeMos($room_id,"light",$subtype);
     }
     /**
@@ -199,10 +200,13 @@ class WeMoLights extends clsModel {
      * @return array list of wemo data arrays
      */
     public static function RoomWeMos($room_id,$type = null, $subtype = null){
+        //Debug::Log("WeMoLights::RoomWeMos",$room_id,$type,$subtype);
         $instance = WeMoLights::GetInstance();
         if(is_null($type) && is_null($subtype)) return $instance->LoadAllWhere(['room_id'=>$room_id],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        //Debug::Log("WeMoLights::RoomWeMos-1",$room_id,$type,$subtype);
         if(is_null($subtype)) return $instance->LoadAllWhere(['room_id'=>$room_id,'type'=>$type],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
-        return $instance->LoadAllWhere(['room_id'=>$room_id,'type'=>$subtype,'subtype'=>$subtype],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        //Debug::Log("WeMoLights::RoomWeMos-2",$room_id,$type,$subtype);
+        return $instance->LoadAllWhere(['room_id'=>$room_id,'type'=>$type,'subtype'=>$subtype],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
     }
     /**
      * load all of type (and subtype)
