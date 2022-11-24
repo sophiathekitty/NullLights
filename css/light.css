@@ -117,7 +117,9 @@ ul .lights a{
     background-image: none, url(/plugins/NullLights/img/painting_on.png);
 }
 
-
+/*
+Target States
+*/
 
 [type="light"][state="0"][target_state="1"],
 .room.card .lights [type="light"][state="0"][target_state="1"] {
