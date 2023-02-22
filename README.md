@@ -11,3 +11,5 @@ need to make sure that curl is installed for php
 ```bash
 sudo apt-get install php-curl -y && sudo service apache2 restart
 ```
+
+* icons made with [open source icons](https://game-icons.net/)
