@@ -15,6 +15,7 @@ class WeMo {
     /**
      * apply the target state to the actual wemo
      * @param array $wemo the wemo data object. needs $wemo['mac_address'] and $wemo['target_state'] and $wemo['state']
+     * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
      */
     public static function SetState($wemo){
         //shell_exec("python /var/www/html/plugins/NullLights/python/main.py ".$wemo['mac_address']);
@@ -34,7 +35,7 @@ class WeMo {
             ManualLogs::SaveLog($wemo);
         }
         
-        WeMoLights::SaveWeMo($wemo);
+        return WeMoLights::SaveWeMo($wemo);
     }
     /**
      * observes the current states for all of the known wemos

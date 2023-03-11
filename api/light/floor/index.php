@@ -18,6 +18,7 @@ function FloorLights($floor){
     $lights = [];
     foreach($rooms['rooms'] as $room){
         $room_lights = WeMoLights::RoomLights($room['id']);
+        //$room_lights = RoomLightsGroup::RoomLightsGroupLight($room['id']);
         $lights = array_merge($lights,$room_lights);
     }
     return ['floor'=>$floor,'lights'=>$lights];

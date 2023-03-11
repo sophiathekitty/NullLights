@@ -34,6 +34,20 @@ class RoomLightsGroup extends clsModel {
             'Default'=>"auto",
             'Extra'=>""
         ],[
+            'Field'=>"snooze_minutes",
+            'Type'=>"int(11)",
+            'Null'=>"YES",
+            'Key'=>"",
+            'Default'=>null,
+            'Extra'=>""
+        ],[
+            'Field'=>"max_on_hours",
+            'Type'=>"int(11)",
+            'Null'=>"YES",
+            'Key'=>"",
+            'Default'=>null,
+            'Extra'=>""
+        ],[
             'Field'=>"type",
             'Type'=>"varchar(10)",
             'Null'=>"NO",
@@ -69,11 +83,39 @@ class RoomLightsGroup extends clsModel {
             'Default'=>"-1",
             'Extra'=>""
         ],[
+            'Field'=>"percent",
+            'Type'=>"float",
+            'Null'=>"NO",
+            'Key'=>"",
+            'Default'=>"1",
+            'Extra'=>""
+        ],[
             'Field'=>"color",
             'Type'=>"varchar(30)",
             'Null'=>"NO",
             'Key'=>"",
             'Default'=>"229,224,111",
+            'Extra'=>""
+        ],[
+            'Field'=>"last_profile_on",
+            'Type'=>"datetime",
+            'Null'=>"YES",
+            'Key'=>"",
+            'Default'=>null,
+            'Extra'=>""
+        ],[
+            'Field'=>"last_on",
+            'Type'=>"datetime",
+            'Null'=>"YES",
+            'Key'=>"",
+            'Default'=>null,
+            'Extra'=>""
+        ],[
+            'Field'=>"last_off",
+            'Type'=>"datetime",
+            'Null'=>"YES",
+            'Key'=>"",
+            'Default'=>null,
             'Extra'=>""
         ],[
             'Field'=>"modified",
@@ -103,12 +145,21 @@ class RoomLightsGroup extends clsModel {
     }
     /**
      * load a wemo by its id
-     * @param string $id the id of the light
+     * @param int $id the id of the light
      * @return array wemo data array
      */
     public static function LightId($id){
         $instance = RoomLightsGroup::GetInstance();
         return $instance->LoadWhere(['id'=>$id]);
+    }
+    /**
+     * load a light by its id
+     * @param string $name the id of the light
+     * @return array light data array
+     */
+    public static function LightName($name){
+        $instance = RoomLightsGroup::GetInstance();
+        return $instance->LoadWhere(['name'=>$name]);
     }
     /**
      * save the wemo
@@ -129,6 +180,34 @@ class RoomLightsGroup extends clsModel {
             return $instance->Save($data);
         }
         return $instance->Save($data,['mac_address'=>$data['mac_address']],$remote_data);
+    }
+    /**
+     * add a wemo to a room light group (or create a new room light group if no match found)
+     * @param array $data the wemo data object
+     * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
+     */
+    public static function GroupWemo($data){
+        $instance = RoomLightsGroup::GetInstance();
+        if(!isset($data['name'])) return ['error'=>"name field missing"];
+        $name = $instance->RemoveTailNumber($data['name']);
+        if(isset($data['light_id']) && (int)$data['light_id'] != 0) $light = RoomLightsGroup::LightId($data['light_id']);
+        else $light = RoomLightsGroup::LightName($name);
+        if(is_null($light)){
+            // add a new light group
+            $light = $instance->CleanData($data);
+            $light['name'] = $name;
+            $save = RoomLightsGroup::SaveLight($light);
+            if(isset($save['last_insert_id'])){
+                $data['light_id'] = $save['last_insert_id'];
+                $save['wemo_save'] = WeMoLights::SaveWeMo($data);
+                return $save;
+            }
+        } else {
+            // just update the wemo
+            $data['light_id'] = $light['id'];
+            return WeMoLights::SaveWeMo($data);
+        }
+        return ["error"=>"not added to a group?"];
     }
     /**
      * load all the wemo lights in a room

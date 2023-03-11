@@ -133,6 +133,15 @@ class WeMoLights extends clsModel {
         return $instance->LoadWhere(['mac_address'=>$mac_address]);
     }
     /**
+     * load all wemos for a light group
+     * @param string $light_id the id of the light group
+     * @return array wemo data array
+     */
+    public static function LightGroup($light_id){
+        $instance = WeMoLights::GetInstance();
+        return $instance->LoadAllWhere(['light_id'=>$light_id]);
+    }
+    /**
      * save the wemo
      * @param array $data the wemo data object
      * @param bool $remote_data is this being synced from another device (make sure we're not overriding fresher local data)
@@ -191,6 +200,17 @@ class WeMoLights extends clsModel {
     public static function RoomLights($room_id,$subtype = null){
         //Debug::Log("WeMoLights::RoomLights",$room_id,$subtype);
         return WeMoLights::RoomWeMos($room_id,"light",$subtype);
+    }
+    /**
+     * load all the wemo lights in a room
+     * @param int $room_id the room's id
+     * @param string|null $subtype filter by subtype
+     * @return array list of wemo data arrays
+     */
+    public static function UnGrouped(){
+        //Debug::Log("WeMoLights::RoomLights",$room_id,$subtype);
+        $instance = WeMoLights::GetInstance();
+        return $instance->LoadAllWhere(['light_id'=>0]);
     }
     /**
      * load all of the wemos in a room
