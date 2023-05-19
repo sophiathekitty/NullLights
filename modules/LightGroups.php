@@ -69,5 +69,37 @@ class LightGroups {
         Debug::Log("FindWemoLightGroup",$wemo,$save);
         return $save;
     }
+    /**
+     * get light group state from light group members
+     * (call this after observing individual wemo states)
+     */
+    public static function SyncStatesFromMembers(){
+        define("DEBUGGING_LIGHT_GROUP_SYNC",true);
+        Services::Start("LightGroups::SyncStates");
+        $lights = RoomLightsGroup::AllLights();
+        foreach($lights as $light){
+            LightGroups::GetStateFromWemoMembers($light);
+        }
+        Services::Complete("LightGroups::SyncStates");
+    }
+    /**
+     * get light group state from light group members
+     * (call this after observing individual wemo states)
+     * @param array $light the light group object as from RoomLightsGroup::LightId($light_id);
+     */
+    public static function GetStateFromWemoMembers($light){
+        Services::Log("LightGroups::SyncStates",$light['name']);
+        $wemos = WeMoLights::LightGroup($light['id']);
+        Services::Log("LightGroups::SyncStates","wemos: ".count($wemos));
+        if(count($wemos) == 0) return;
+        $light['state'] = 0; // default to off
+        foreach($wemos as $wemo){
+            Services::Log("LightGroups::SyncStates","wemo: ".$wemo['name']." [".$wemo['state']."]");
+            if((int)$wemo['state'] == 1) $light['state'] = 1;
+        }
+        Services::Log("LightGroups::SyncStates","state: ".$light['state']);
+        $save = RoomLightsGroup::SaveLight($light);
+        Services::Log("LightGroups::SyncStates","save error: ".$save['error']);
+    }
 }
 ?>

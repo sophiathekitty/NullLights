@@ -1,8 +1,9 @@
 <?php
 Services::Start("NullLights::EveryMinute");
-Services::Log("NullLights::EveryMinute","WeMoSync::Observe--start");
+Services::Log("NullLights::EveryMinute","WeMoSync::Observe");
 WeMoSync::Observe();
-Services::Log("NullLights::EveryMinute","WeMoSync::Observe--done");
+Services::Log("NullLights::EveryMinute","LightGroups::SyncStatesFromMembers");
+LightGroups::SyncStatesFromMembers();
 if(Servers::IsMain() || Settings::LoadSettingsVar("light_automation_mode","main") == "practice"){
     Services::Log("NullLights::EveryMinute","Do automation ".Settings::LoadSettingsVar("light_automation_mode","main"));
     if(is_file($root_path."plugins/NullLights/scripts/lights.php")){

@@ -179,7 +179,7 @@ class RoomLightsGroup extends clsModel {
         if(is_null($light)){
             return $instance->Save($data);
         }
-        return $instance->Save($data,['mac_address'=>$data['mac_address']],$remote_data);
+        return $instance->Save($data,['id'=>$data['id']],$remote_data);
     }
     /**
      * add a wemo to a room light group (or create a new room light group if no match found)
