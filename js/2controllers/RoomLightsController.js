@@ -13,11 +13,15 @@ class RoomLightsController extends Controller {
             console.log("RoomLightsController::RoomsReady");
         }
         //this.interval = setInterval(this.refresh.bind(this),20000);
+        this.refreshInterval(60000);
         this.click("main","a.light",e=>{
             e.preventDefault();
-            var mac_address = $(e.currentTarget).attr("mac_address");
-            console.log("RoomLightsController::Click",mac_address,$(e.currentTarget).html());
-            LightsCollection.toggleLight(mac_address,json=>{
+            /**
+             * Refactoring: need to update this to use the light groups instead of wemo
+             */
+            var light_id = $(e.currentTarget).attr("light_id");
+            console.log("RoomLightsController::Click",light_id,$(e.currentTarget).html());
+            LightsCollection.toggleLight(light_id,json=>{
                 if(this.debug) console.log("RoomLightsController::ToggleSuccess",json);
             },error=>{
                 if(this.debug) console.error("RoomLightsController::ToggleError",error);
@@ -34,6 +38,7 @@ class RoomLightsController extends Controller {
         if(this.debug){
             console.log("RoomLightsController::Refresh");
         }
+        this.view.refreshStates();
         //this.view.display();
     }
 }

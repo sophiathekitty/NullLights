@@ -53,13 +53,17 @@ class WeMoSync {
         $hub = Servers::GetHub();
         if(is_null($hub)) return null;
         //$lights = LoadJsonArray("http://".$hub['url']."/api/light");
-        $url = "plugins/NullLights/api/light";
-        if($hub['type'] == "old_hub") $url = "/api/light";
+        $url = "plugins/NullLights/api/wemos";
+        $key = "wemos";
+        if($hub['type'] == "old_hub"){
+            $url = "/api/light";
+            $key = "lights";
+        } 
         $lights = ServerRequests::LoadHubJSON($url);
         Debug::Log("WeMoSync::PullLightsFromHub--remote lights",$lights);
-        Services::Log("NullLights::WeMoSync::Observe","WeMoSync::PullLightsFromHub -- ".count($lights));
+        Services::Log("NullLights::WeMoSync::Observe","WeMoSync::PullLightsFromHub -- ".count($lights[$key]));
         //Settings::SaveSettingsVar("service::PullLights",count($lights)."|".date("H:i:s"));
-        foreach($lights["lights"] as $light){
+        foreach($lights[$key] as $light){
             $l = WeMoLights::MacAddress($light['mac_address']);
             if($l['state'] != $light['state']) ManualLogs::SaveLog($light);
             $save = WeMoLights::SaveWeMo($light,true);

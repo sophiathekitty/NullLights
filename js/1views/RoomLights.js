@@ -17,8 +17,8 @@ class RoomLightsView extends View {
         if(this.model){
             this.model.getData(json=>{
                 json.lights.forEach(light=>{
-                    $(".light[mac_address="+light.mac_address+"]").attr("state",light.state);
-                    $(".light[mac_address="+light.mac_address+"]").attr("target_state",light.target_state);
+                    $(".light[light_id="+light.id+"]").attr("state",light.state);
+                    $(".light[light_id="+light.id+"]").attr("target_state",light.target_state);
                 });
             });
         }
@@ -36,13 +36,13 @@ class RoomLightsView extends View {
                             json.forEach(light => {
                                 var lighting = "other";
                                 if(light.type == "light")  lighting = "lighting"
-                                $(itm_html).appendTo("[room_id="+room_id+"] ."+lighting).attr("mac_address",light.mac_address);
-                                $("[room_id="+room_id+"] [mac_address="+light.mac_address+"]").attr("type",light.type);
-                                $("[room_id="+room_id+"] [mac_address="+light.mac_address+"]").attr("subtype",light.subtype);
-                                $("[room_id="+room_id+"] [mac_address="+light.mac_address+"]").attr("state",light.state);
-                                $("[room_id="+room_id+"] [mac_address="+light.mac_address+"]").attr("target_state",light.target_state);
-                                $("[room_id="+room_id+"] [mac_address="+light.mac_address+"]").attr("lock_state",light.lock_state);
-                                $("[room_id="+room_id+"] [mac_address="+light.mac_address+"]").attr("error",light.error);
+                                $(itm_html).appendTo("[room_id="+room_id+"] ."+lighting).attr("light_id",light.id);
+                                $("[room_id="+room_id+"] [light_id="+light.id+"]").attr("type",light.type);
+                                $("[room_id="+room_id+"] [light_id="+light.id+"]").attr("subtype",light.subtype);
+                                $("[room_id="+room_id+"] [light_id="+light.id+"]").attr("state",light.state);
+                                $("[room_id="+room_id+"] [light_id="+light.id+"]").attr("target_state",light.target_state);
+                                $("[room_id="+room_id+"] [light_id="+light.id+"]").attr("lock_state",light.lock_state);
+                                $("[room_id="+room_id+"] [light_id="+light.id+"]").attr("error",light.error);
                             });
                         });
                     });
@@ -56,12 +56,12 @@ class RoomLightsView extends View {
         if($("[room_id="+room_id+"]").length){
             this.module.getRoomLights(room_id,json=>{
                 json.forEach(light => {
-                    $("[room_id="+room_id+"] [mac_address="+light.mac_address+"]").attr("type",light.type);
-                    $("[room_id="+room_id+"] [mac_address="+light.mac_address+"]").attr("subtype",light.subtype);
-                    $("[collection=lights] [mac_address="+light.mac_address+"]").attr("state",light.state);
-                    $("[collection=lights] [mac_address="+light.mac_address+"]").attr("target_state",light.target_state);
-                    $("[collection=lights] [mac_address="+light.mac_address+"]").attr("lock_state",light.lock_state);
-                    $("[collection=lights] [mac_address="+light.mac_address+"]").attr("error",light.error);
+                    $("[room_id="+room_id+"] [light_id="+light.id+"]").attr("type",light.type);
+                    $("[room_id="+room_id+"] [light_id="+light.id+"]").attr("subtype",light.subtype);
+                    $("[collection=lights] [light_id="+light.id+"]").attr("state",light.state);
+                    $("[collection=lights] [light_id="+light.id+"]").attr("target_state",light.target_state);
+                    $("[collection=lights] [light_id="+light.id+"]").attr("lock_state",light.lock_state);
+                    $("[collection=lights] [light_id="+light.id+"]").attr("error",light.error);
                 });
             });
         } else if(this.debug) console.error("RoomLightsView::Display",room_id,"Room Element Missing");
