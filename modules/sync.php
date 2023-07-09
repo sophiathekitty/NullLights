@@ -69,7 +69,7 @@ class WeMoSync {
             $save = WeMoLights::SaveWeMo($light,true);
             Debug::Log("WeMoSync::PullLightsFromHub--save",$save);
             Services::Log("NullLights::WeMoSync::Observe",$light['name']." ".$light['state']);
-            WeMoLogs::SaveLog($light);
+            //WeMoLogs::SaveLog($light);
         }
         Debug::Log("WeMoSync::PullLightsFromHub--local lights",WeMoLights::AllLights());
     }

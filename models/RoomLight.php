@@ -83,6 +83,13 @@ class RoomLightsGroup extends clsModel {
             'Default'=>"-1",
             'Extra'=>""
         ],[
+            'Field'=>"error",
+            'Type'=>"tinyint(1)",
+            'Null'=>"NO",
+            'Key'=>"",
+            'Default'=>"0",
+            'Extra'=>""
+        ],[
             'Field'=>"percent",
             'Type'=>"float",
             'Null'=>"NO",

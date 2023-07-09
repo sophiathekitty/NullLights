@@ -93,13 +93,84 @@ class LightGroups {
         Services::Log("LightGroups::SyncStates","wemos: ".count($wemos));
         if(count($wemos) == 0) return;
         $light['state'] = 0; // default to off
+        $light['error'] = 0; // assume no error
         foreach($wemos as $wemo){
-            Services::Log("LightGroups::SyncStates","wemo: ".$wemo['name']." [".$wemo['state']."]");
+            Services::Log("LightGroups::SyncStates","wemo: ".$wemo['name']." [".$wemo['state']."] [".$wemo['error']."]");
             if((int)$wemo['state'] == 1) $light['state'] = 1;
+            if((int)$wemo['state'] == 2) $light['state'] = 2;
+            if((int)$wemo['error'] == 1) $light['error'] = 1;
         }
         Services::Log("LightGroups::SyncStates","state: ".$light['state']);
+        Services::Log("LightGroups::SyncStates","error: ".$light['error']);
         $save = RoomLightsGroup::SaveLight($light);
         Services::Log("LightGroups::SyncStates","save error: ".$save['error']);
+        RoomLightLogs::SaveLog($light);
+        //Services::Log("LightGroups::SyncStates","log guid: ".$save['row']['guid']);
+    }
+    /**
+     * Log room lights group
+     */
+    public static function Log(){
+        $groups = RoomLightsGroup::AllLights();
+        foreach($groups as $group){
+            RoomLightLogs::SaveLog($group);
+        }
+    }
+    /**
+     * Basic Automate pass for RoomLightGroup. this handles the basic snooze and max on functions
+     */
+    public  static function BasicAutomation(&$roomLights = null)
+    {
+        // Load all RoomLights if they weren't sent
+        $save = false;
+        if(is_null($roomLights)){
+            // no RoomLights were sent so this is running stand alone and need to save if the changes are going to go anywhere
+            $roomLights = RoomLightsGroup::AllLights();
+            $save = true;
+        }
+        $currentTime = date('Y-m-d H:i:s');
+        // Update and save each individual RoomLight
+        foreach ($roomLights as &$roomLight) {
+            // check mode to see if the light should be on or off
+            if ($roomLight['mode'] == "on") {
+                $roomLight['target_state'] = 1;
+            } elseif ($roomLight['mode'] == "off") {
+                $roomLight['target_state'] = 0;
+            }
+            // if the light isn't automated don't automate
+            if ($roomLight['mode'] != "auto") continue; 
+            // Update last_on and last_off timestamps based on the current state
+            if ($roomLight['state'] == 1) {
+                $roomLight['last_on'] = $currentTime;
+            } else {
+                $roomLight['last_off'] = $currentTime;
+            }
+            // Check snooze duration if snooze_minutes is set
+            if (isset($roomLight['snooze_minutes']) && $roomLight['snooze_minutes'] !== null && (int)$roomLight['state'] == 1 && $roomLight['snooze_minutes'] > 0) {
+                $lastOffForSnooze = $roomLight['last_off'];
+                // Override last_off for snoozing calculations
+                if (!is_null($roomLight['last_profile_on']) && strtotime($roomLight['last_profile_on']) > strtotime($lastOffForSnooze)) {
+                    $lastOffForSnooze = $roomLight['last_profile_on'];
+                }
+                $snoozeDuration = strtotime($currentTime) - strtotime($lastOffForSnooze);
+                if ($snoozeDuration >= MinutesToSeconds($roomLight['snooze_minutes'])) {
+                    // Snooze the light
+                    $roomLight['target_state'] = 0;
+                }
+            }
+            // Calculate maximum on duration if max_on_hours is set
+            if (isset($roomLight['max_on_hours']) && $roomLight['max_on_hours'] !== null && $roomLight['max_on_hours'] > 0) {
+                $maxOnDuration = $roomLight['max_on_hours'] * 3600;
+                $restDuration = 0.75 * $maxOnDuration;
+                $windowDuration = $maxOnDuration + $restDuration;
+                $onTimeWithinWindow = RoomLightLogs::Recent($roomLight['id'],$windowDuration);
+                if ($onTimeWithinWindow >= $maxOnDuration) {
+                    // Rest period required, set target_state to off
+                    $roomLight['target_state'] = 0;
+                }
+            }
+            if($save) RoomLightsGroup::SaveLight($roomLight);
+        }
     }
 }
 ?>

@@ -17,8 +17,12 @@ class RoomLightsView extends View {
         if(this.model){
             this.model.getData(json=>{
                 json.lights.forEach(light=>{
+                    $(".light[light_id="+light.id+"]").attr("type",light.type);
+                    $(".light[light_id="+light.id+"]").attr("subtype",light.subtype);
                     $(".light[light_id="+light.id+"]").attr("state",light.state);
                     $(".light[light_id="+light.id+"]").attr("target_state",light.target_state);
+                    $(".light[light_id="+light.id+"]").attr("lock_state",light.lock_state);
+                    $(".light[light_id="+light.id+"]").attr("error",light.error);
                 });
             });
         }

@@ -146,4 +146,161 @@ class WeMoChart {
         return $data;
     }
 }
+
+/**
+ * chat gpt code
+ */
+
+/**
+ * module for generating charts and logs for room lights
+ */
+class RoomLightChart {
+    /**
+     * generates an empty hourly chart
+     * @return array an empty hourly chart
+     */
+    public static function EmptyHourly(){
+        Debug::Trace("RoomLightChart::EmptyHourly");
+        $hourly = [];
+        for($i = 0; $i < 24; $i++){
+            $h = (string)$i;
+            if($i < 10) $h = "0$i";
+            $hourly[] = ['hour'=>$h,'on'=>0,'off'=>0,'error'=>0,'count'=>0];
+        }
+        return $hourly;
+    }
+    /**
+     * generates the hourly charts for all the lights in a room
+     * @param int $room_id the id of the room
+     * @return array list of lights and their hourly charts
+     */
+    public static function HourlyRoomLightRoomLog($room_id){
+        Debug::Trace("RoomLightChart::HourlyRoomLightLog");
+        $lights = RoomLightsGroup::RoomDevices($room_id);
+        $logs = [];
+        foreach($lights as $light){
+            //$all = RoomLightLogs::LightID($light['light_id']);
+            array_push($logs,["light"=>$light,"hourly"=>RoomLightChart::HourlyRoomLightLog($light['id'])]);
+        }
+        return $logs;
+    }
+    /**
+     * generates a detailed hourly chart for a room light
+     * @param string $light_id the light ID
+     * @return array a detailed hourly chart
+     */
+    public static function HourlyRoomLightLog($light_id){
+        Debug::Trace("RoomLightChart::HourlyRoomLightLog");
+        $where = "`id` = '$light_id'";
+        $light = RoomLightsGroup::LightID($light_id);
+        $log = RoomLightChart::RoomLightDayData($where);
+        $archive = RoomLightGroupArchiver::CalculateRoomLightGroupArchiveAverageHours(RoomLightArchives::Recent($light_id,Settings::LoadSettingsVar("room_light_archive_chart_days",5)));
+        $log = RoomLightChart::RoomLightCombineArchiveWithLog($archive,$log);
+        for($i = 0; $i < count($log); $i++){
+            $alpha = round($log[$i]['average'] * 0.9,3);
+            $log[$i]['color_c'] = "rgba(".$light['color'].",".$alpha.")";
+            $alpha_a = round($log[$i]['average_a'] * 0.9,3);
+            $log[$i]['color'] = "rgba(".$light['color'].",".$alpha_a.")";
+            $alpha_a = round($log[$i]['archive'] * 0.9,3);
+            $log[$i]['color_a'] = "rgba(".$light['color'].",".$alpha_a.")";
+        }
+        return $log;
+    }
+    /**
+     * combines the hourly chart from room light logs and an archive
+     * @param array $archive the archive data
+     * @param array $log the hourly chart from room light logs
+     * @return array the hourly chart with the archive added
+     */
+    public static function RoomLightCombineArchiveWithLog($archive,$log){    // archive data
+        Debug::Trace("RoomLightChart::RoomLightCombineArchiveWithLog");
+        for($i = 0; $i < 24; $i++){
+            $log[$i]['average_a'] = ($log[$i]['average']+$archive["h$i"])/2;
+            $log[$i]['archive'] = $archive["h$i"];
+            $h = (string)$i;
+            if($i < 10) $h = "0$i";
+            $log[$i]['hour'] = $h;
+            if(is_nan($log[$i]['archive'])) $log[$i]['archive'] = $log[$i]['average'];
+            if(is_nan($log[$i]['average_a'])) $log[$i]['average_a'] = $log[$i]['average'];
+        }
+        return $log;
+    }
+    /**
+     * generates an hourly chart from the room light logs on a specific date
+     * @param string $light_id the light ID
+     * @param string $date the date string
+     * @return array the hourly chart for the specified date
+     */
+    public static function HourlyRoomLightLogDate($light_id,$date){
+        Debug::Trace("RoomLightChart::HourlyRoomLightLogDate");
+        $where = "`id` = '$light_id' AND `created` BETWEEN '$date 00:00:00' AND '$date 23:59:59'";
+        $light = RoomLightsGroup::LightId($light_id);
+        $log = RoomLightChart::RoomLightDayData($where);
+        $logs = RoomLightLogs::LightID($light_id);
+        
+        for($i = 0; $i < count($log); $i++){
+            $alpha = round($log[$i]['average'] * 0.9,3);
+            $log[$i]['color'] = "rgba(".$light['color'].",".$alpha.")";
+        }
+        return $log;
+    }
+    /**
+     * gets the hourly data for a day
+     * @param string $where a where string for selecting the date
+     * @return array returns hourly data for day
+     */
+    private static function RoomLightDayData($where){
+        Debug::Trace("RoomLightChart::RoomLightDayData");
+        $logs = RoomLightLogs::Where($where);
+        $chart = RoomLightChart::EmptyHourly();
+        foreach($logs as $log){
+            $h = (int)date("G",strtotime($log['created']));
+            /*
+            if(!isset($chart[(int)$h]['on'])) $chart[(int)$h]['on'] = 0;
+            if(!isset($chart[(int)$h]['off'])) $chart[(int)$h]['off'] = 0;
+            if(!isset($chart[(int)$h]['error'])) $chart[(int)$h]['error'] = 0;
+            */
+            $chart[$h]['count']++;
+            $chart[$h]['on'] += $log['state'];
+            $chart[$h]['error'] += $log['error'];
+        }
+        //$day = [];
+        for($h = 0; $h < 24; $h++){
+            //$day[$h] = RoomLightChart::HourlyRoomLightData($where,$h);
+            if($chart[$h]['count']) $chart[$h]['average'] = $chart[$h]['on'] / $chart[$h]['count'];
+            $chart[$h]['off'] = $chart[$h]['count'] - $chart[$h]['on'];
+        }
+        return $chart;
+    }
+    /**
+     * gets hour data for a date
+     * @param string $where a where string for selecting the date
+     * @param int $hour the hour
+     * @return array the hour data array
+     */
+    private static function HourlyRoomLightData($where,$hour){
+        Debug::Trace("RoomLightChart::HourlyRoomLightData");
+        $table = RoomLightLogs::HourWhere($where,$hour);
+        if($hour < 10) $hour = "0".$hour;
+        $data = ['hour'=>$hour,'on' => 0, 'off' => 0, 'error' => 0];
+        foreach($table as $row){
+            $data['on'] += $row['state'];
+            if($row['error']) $data['error']++;
+        }
+        $data['off'] = count($table) - $data['on'];
+        $data['average'] = 0;
+        if($data['on'] > $data['off']){
+            $data['state'] = 'on';
+        } else {
+            $data['state'] = 'off';
+        }
+        if(count($table) == 0){
+            $data['state'] = 'unknown';
+        } else {
+            $data['average'] = round($data['on'] / count($table),3);
+        }
+        return $data;
+    }
+}
+
 ?>

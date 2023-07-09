@@ -121,15 +121,6 @@ class WemoTime {
      */
     public static function RoomOnTime($wemo){
         return WemoTime::RoomOnTime_RoomId($wemo['room_id']);
-        /*
-        $lights = WeMoLights::RoomLights($wemo['room_id']);
-        $time = 0;
-        foreach($lights as $light){
-            $t = WemoTime::OnTime($light);
-            if($t > $time) $time = $t;
-        }
-        return $time;
-        */
     }
     /**
      * how long the lights have been on in room
@@ -151,16 +142,6 @@ class WemoTime {
      */
     public static function RoomOffTime($wemo){
         return WemoTime::RoomOffTime_RoomId($wemo['room_id']);
-        /*
-        $lights = WeMoLights::RoomLights($wemo['room_id']);
-        $time = null;
-        foreach($lights as $light){
-            $t = WemoTime::OffTime($light);
-            if(is_null($time)) $time = $t;
-            if($t < $time) $time = $t;
-        }
-        return $time;
-        */
     }
     /**
      * how long the lights have been off in room
@@ -183,16 +164,6 @@ class WemoTime {
      */
     public static function NeighborsOnTime($wemo){
         return WemoTime::NeighborsOnTime_RoomId($wemo['room_id']);
-        /*
-        $neighbors = RoomNeighbors::Neighbors($wemo['room_id']);
-        $time = 0;
-        Debug::Log("NeighborsOnTime",$wemo,$neighbors);
-        foreach($neighbors as $room_id){
-            $t = WemoTime::RoomOnTime($room_id);
-            if($t > $time) $time = $t;
-        }
-        return $time;
-        */
     }
     /**
      * how long the lights have been on in room
@@ -218,20 +189,6 @@ class WemoTime {
      */
     public static function NeighborsOffTime($wemo){
         return WemoTime::NeighborsOffTime_RoomId($wemo['room_id']);
-        /*
-        $neighbors = RoomNeighbors::Neighbors($wemo['room_id']);
-        $time = null;
-        Debug::Log("NeighborsOffTime",$wemo,$neighbors);
-        foreach($neighbors as $neighbor){
-            if($neighbor['neighbor_id'] != $room_id){
-                
-            }
-            $t = WemoTime::RoomOffTime_RoomId($neighbor['neighbor_id']);
-            if(is_null($time)) $time = $t;
-            if($t < $time) $time = $t;
-        }
-        return $time;
-        */
     }
     /**
      * how long the lights have been off in room
@@ -285,16 +242,6 @@ class WemoTime {
      */
     public static function RoomLampOnTime($wemo){
         return WemoTime::RoomLampOnTime_RoomId($wemo['room_id']);
-        /*
-        $lights = WeMoLights::RoomLights($wemo['room_id'],"lamp");
-        Debug::Log("WeMoTime::RoomLampOnTime",$wemo,$lights);
-        $time = 0;
-        foreach($lights as $light){
-            $t = WemoTime::OnTime($light);
-            if($t > $time) $time = $t;
-        }
-        return $time;
-        */
     }
     /**
      * how long the lamp has been on in a room
@@ -317,17 +264,6 @@ class WemoTime {
      */
     public static function RoomLampOffTime($wemo){
         return WemoTime::RoomLampOffTime_RoomId($wemo['room_id']);
-        /*
-        $lights = WeMoLights::RoomLights($wemo['room_id'],"lamp");
-        Debug::Log("WeMoTime::RoomLampOffTime",$wemo,$lights);
-        $time = null;
-        foreach($lights as $light){
-            $t = WemoTime::OffTime($light);
-            if(is_null($time)) $time = $t;
-            if($t < $time) $time = $t;
-        }
-        return $time;
-        */
     }
     /**
      * how long the lamp has been on in a room
@@ -352,15 +288,6 @@ class WemoTime {
      */
     public static function RoomMoodOnTime($wemo){
         return WemoTime::RoomMoodOnTime_RoomId($wemo['room_id']);
-        /*
-        $lights = WeMoLights::RoomLights($wemo['room_id'],"mood");
-        $time = 0;
-        foreach($lights as $light){
-            $t = WemoTime::OnTime($light);
-            if($t > $time) $time = $t;
-        }
-        return $time;
-        */
     }
     /**
      * how long the lamp has been on in a room
@@ -383,16 +310,6 @@ class WemoTime {
      */
     public static function RoomMoodOffTime($wemo){
         return WemoTime::RoomMoodOffTime_RoomId($wemo['room_id']);
-        /*
-        $lights = WeMoLights::RoomLights($wemo['room_id'],"mood");
-        $time = null;
-        foreach($lights as $light){
-            $t = WemoTime::OffTime($light);
-            if(is_null($time)) $time = $t;
-            if($t < $time) $time = $t;
-        }
-        return $time;
-        */
     }
     /**
      * how long the lamp has been on in a room
@@ -425,8 +342,6 @@ class WemoTime {
         return ($errors / count($logs));
     }
 }
-
-
 
 
 

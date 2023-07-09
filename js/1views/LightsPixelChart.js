@@ -17,7 +17,7 @@ class LightsPixelChart extends View {
                         $(html).appendTo("#floors [room_id="+room_id+"] .charts").attr("room_id",room_id);
                         json.charts.forEach(chart=>{
                             if(this.debug) console.log("LightsPixelChart::Build",room_id,chart);
-                            $("<div class='light' mac_address='"+chart.light.mac_address+"'></div>").appendTo("#floors [room_id="+room_id+"] .charts [collection=lights_chart] .hour");
+                            $("<div class='light' light_id='"+chart.light.id+"'></div>").appendTo("#floors [room_id="+room_id+"] .charts [collection=lights_chart] .hour");
                             this.displayRoomChart(room_id,chart);
                         });
                     }
@@ -47,7 +47,7 @@ class LightsPixelChart extends View {
         if(this.debug) console.info("LightsPixelChart::DisplayRoomChart",room_id,chart);
         for(var i = 0; i < 24; i++){
             if(this.debug) console.log("LightsPixelChart::DisplayRoomChart -- hourly",chart.hourly[i],chart.hourly[i].hour,chart.hourly[i].color);        
-            $("#floors [room_id="+room_id+"] .charts [collection=lights_chart] .hour[hour="+chart.hourly[i].hour+"] [mac_address="+chart.light.mac_address+"]").css("background-color",chart.hourly[i].color);
+            $("#floors [room_id="+room_id+"] .charts [collection=lights_chart] .hour[hour="+chart.hourly[i].hour+"] [light_id="+chart.light.id+"]").css("background-color",chart.hourly[i].color);
         }
         /*
         chart.hourly.forEach(hour=>{

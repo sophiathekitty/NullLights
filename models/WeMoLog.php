@@ -65,6 +65,7 @@ class WeMoLogs extends clsModel {
     public static function SaveLog(array $data){
         $instance = WeMoLogs::GetInstance();
         $instance->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('wemo_log_days',1)));
+        return null;
         $data = $instance->CleanData($data);
         $data['guid'] = md5($data['mac_address'].date("Y-m-d H:i:s").$data['state']);
         return $instance->Save($data);
