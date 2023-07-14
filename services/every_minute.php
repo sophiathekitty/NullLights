@@ -2,6 +2,8 @@
 Services::Start("NullLights::EveryMinute");
 Services::Log("NullLights::EveryMinute","WeMoSync::Observe");
 WeMoSync::Observe();
+Services::Log("NullLights::EveryMinute","TuyaSync::Observe");
+TuyaSync::Observe();
 Services::Log("NullLights::EveryMinute","LightGroups::SyncStatesFromMembers");
 LightGroups::SyncStatesFromMembers();
 if(Servers::IsMain() || Settings::LoadSettingsVar("light_automation_mode","main") == "practice"){

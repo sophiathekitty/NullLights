@@ -45,6 +45,15 @@
 .room.card .lights [type="other"][subtype="lava"][state="1"][error="1"] {
     background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/bubbles-on.png);
 }
+[type="other"][subtype="desk"][state="0"][error="1"],
+.room.card .lights [type="other"][subtype="desk"][state="0"][error="1"] {
+    background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/desk-off.png);
+}
+[type="other"][subtype="desk"][state="1"][error="1"],
+.room.card .lights [type="other"][subtype="desk"][state="1"][error="1"] {
+    background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/desk-on.png);
+}
+
 
 [type="other"][subtype="stars"][state="0"][error="1"],
 .room.card .lights [type="other"][subtype="stars"][state="0"][error="1"] {
@@ -79,6 +88,14 @@
 }
 [type="light"][subtype="inquisition"][state="1"][error="1"],
 .room.card .lights [type="light"][subtype="inquisition"][state="1"][error="1"] {
+    background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/ceiling_on.png);
+}
+[type="light"][subtype="ceiling"][state="0"][error="1"],
+.room.card .lights [type="light"][subtype="ceiling"][state="0"][error="1"] {
+    background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/ceiling_off.png);
+}
+[type="light"][subtype="ceiling"][state="1"][error="1"],
+.room.card .lights [type="light"][subtype="ceiling"][state="1"][error="1"] {
     background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/ceiling_on.png);
 }
 

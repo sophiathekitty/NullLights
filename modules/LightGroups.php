@@ -43,6 +43,7 @@ class LightGroups {
             $wemo = WeMoLights::MacAddress($wemo['mac_address']);
             if($wemo['target_state'] != -1 || $wemo['state'] != $state) $success = false;
         }
+        if(!Tuya::SetGroupState($light_id,$state)) $success = false;
         // go through the tuya devices
         if($success){
             $group['target_state'] = -1;
@@ -78,7 +79,13 @@ class LightGroups {
         Services::Start("LightGroups::SyncStates");
         $lights = RoomLightsGroup::AllLights();
         foreach($lights as $light){
+            $light['state'] = 0; // default to off
+            $light['error'] = 0; // assume no error
             LightGroups::GetStateFromWemoMembers($light);
+            LightGroups::GetStateFromTuyaMembers($light);
+            $save = RoomLightsGroup::SaveLight($light);
+            Services::Log("LightGroups::SyncStates","save error: ".$save['error']);
+            RoomLightLogs::SaveLog($light);
         }
         Services::Complete("LightGroups::SyncStates");
     }
@@ -87,13 +94,11 @@ class LightGroups {
      * (call this after observing individual wemo states)
      * @param array $light the light group object as from RoomLightsGroup::LightId($light_id);
      */
-    public static function GetStateFromWemoMembers($light){
-        Services::Log("LightGroups::SyncStates",$light['name']);
+    public static function GetStateFromWemoMembers(&$light){
+        Services::Log("LightGroups::SyncStates","WemoMembers:".$light['name']);
         $wemos = WeMoLights::LightGroup($light['id']);
         Services::Log("LightGroups::SyncStates","wemos: ".count($wemos));
         if(count($wemos) == 0) return;
-        $light['state'] = 0; // default to off
-        $light['error'] = 0; // assume no error
         foreach($wemos as $wemo){
             Services::Log("LightGroups::SyncStates","wemo: ".$wemo['name']." [".$wemo['state']."] [".$wemo['error']."]");
             if((int)$wemo['state'] == 1) $light['state'] = 1;
@@ -102,9 +107,28 @@ class LightGroups {
         }
         Services::Log("LightGroups::SyncStates","state: ".$light['state']);
         Services::Log("LightGroups::SyncStates","error: ".$light['error']);
-        $save = RoomLightsGroup::SaveLight($light);
-        Services::Log("LightGroups::SyncStates","save error: ".$save['error']);
-        RoomLightLogs::SaveLog($light);
+        //RoomLightLogs::SaveLog($light);
+        //Services::Log("LightGroups::SyncStates","log guid: ".$save['row']['guid']);
+    }
+    /**
+     * get light group state from light group members
+     * (call this after observing individual tuya states)
+     * @param array $light the light group object as from RoomLightsGroup::LightId($light_id);
+     */
+    public static function GetStateFromTuyaMembers(&$light){
+        Services::Log("LightGroups::SyncStates","TuyaMembers:".$light['name']);
+        $tuyas = TuyaLights::LightGroup($light['id']);
+        Services::Log("LightGroups::SyncStates","tuya: ".count($tuyas));
+        if(count($tuyas) == 0) return;
+        foreach($tuyas as $tuya){
+            Services::Log("LightGroups::SyncStates","tuya: ".$tuya['name']." [".$tuya['state']."] [".$tuya['error']."]");
+            if((int)$tuya['state'] == 1) $light['state'] = 1;
+            if((int)$tuya['state'] == 2) $light['state'] = 2;
+            if((int)$tuya['error'] == 1) $light['error'] = 1;
+        }
+        Services::Log("LightGroups::SyncStates","state: ".$light['state']);
+        Services::Log("LightGroups::SyncStates","error: ".$light['error']);
+        //RoomLightLogs::SaveLog($light);
         //Services::Log("LightGroups::SyncStates","log guid: ".$save['row']['guid']);
     }
     /**

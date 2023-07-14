@@ -60,6 +60,7 @@ class ManualLogs extends clsModel {
         $data['user_id'] = $session['user_id'];
         $instance = ManualLogs::GetInstance();
         $instance->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('automation_log_days',5)));
+        return;
         $data = $instance->CleanData($data);
         $data['guid'] = md5($data['mac_address'].date("Y-m-d H:i:s").$data['state']);
         $res = $instance->Save($data);

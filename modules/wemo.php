@@ -68,7 +68,7 @@ class WeMo {
         WeMo::Observe();
         $lights = WeMoLights::AllLights();
         foreach($lights as $light){
-            WeMoLogs::AddLog($light['mac_address'],$light['state']);
+            //WeMoLogs::AddLog($light['mac_address'],$light['state']);
         }
     }
     /**

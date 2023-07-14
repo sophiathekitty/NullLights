@@ -42,6 +42,7 @@ class LightsCollection extends Collection {
             } else {
                 light.target_state = 0;
             }
+            $("[collection=lights] [light_id="+light.id+"]").attr("target_state",light.target_state);
             if(this.log) console.log("LightsCollection::ToggleLight:getItem",light_id,light.state,"->",light.target_state);
             LightsCollection.instance.setItem(light,doneCallback);
             //LightsCollection.instance.pushData(callBack,errorCallback,errorCallback,doneCallback);

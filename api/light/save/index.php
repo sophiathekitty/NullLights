@@ -16,6 +16,7 @@ if(isset($_GET['lights'])){
 } else if(isset($_GET['id'],$_GET['target_state'])) {
     LightGroups::SetState($_GET['id'],$_GET['target_state']);
     $data['light'] = RoomLightsGroup::LightId($_GET['id']);
+    $data['light_group'] = RoomLightsGroup::LightId($_GET['id']);
 }
 OutputJson($data);
 ?>
