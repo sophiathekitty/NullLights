@@ -2,6 +2,7 @@ import tinytuya
 from six.moves import urllib
 import json
 import sys
+from concurrent.futures import ThreadPoolExecutor
 
 if(len(sys.argv) == 3):
     light_id = sys.argv[1]
@@ -22,7 +23,12 @@ if(len(sys.argv) == 4):
     result = urllib.request.urlopen(f'http://localhost/plugins/NullLights/api/tuya?light_id={light_id}')
     tuyas = json.loads(result.read())
 devices = []
+error_tuyas = []
+'''
 for tuya in tuyas['tuyas']:
+    devices.append(d)
+'''
+def set_state(tuya):
     device_id = tuya['id']
     ip_address = tuya['url']
     local_key = tuya['local_key']
@@ -40,12 +46,32 @@ for tuya in tuyas['tuyas']:
     else:
         d = tinytuya.OutletDevice(device_id,ip_address,local_key)
     d.set_version(3.3)  # IMPORTANT to set this regardless of version
-    devices.append(d)
     if target_state:
-        data = d.turn_on(nowait=True)
+        data = d.turn_on()
     else:
-        data = d.turn_off(nowait=True)
+        data = d.turn_off()
+    data = d.status()
+    device_id = tuya['id']
+    device_type = tuya['product_type']
+    state = -1
+    if 'dps' in data:
+        state = 0
+        if device_type == "bulb" and data['dps']['20']:
+            state = 1
+        if device_type == "outlet" and data['dps']['1']:
+            state = 1
+        print(f"State: {state}")
+        result = urllib.request.urlopen(f"http://localhost/plugins/NullLights/api/tuya/save/?id={device_id}&state={state}&error=0&target_state=-1")
+    else:
+        print('Error getting status')
+        error_tuyas.append(tuya)
+        #result = urllib.request.urlopen(f"http://localhost/plugins/NullLights/api/tuya/save/?id={tuya['id']}&error=1")
 
+# Create a ThreadPoolExecutor with a maximum of 4 threads (to match the number of bulbs)
+with ThreadPoolExecutor(max_workers=len(tuyas['tuyas'])) as executor:
+    # Submit the turn_on_bulb function for each bulb
+    executor.map(set_state, tuyas['tuyas'])
+'''
 print("====")
 print("ok... time to check our work.")
 print("====")
@@ -78,6 +104,7 @@ for d in devices:
         #result = urllib.request.urlopen(f"http://localhost/plugins/NullLights/api/tuya/save/?id={tuya['id']}&error=1")
     print("----")
     i += 1
+'''
 if error_tuyas:
     print("Need Cloud Fallback")
     # Get Tuya API Settings
@@ -89,7 +116,7 @@ if error_tuyas:
         apiKey      =   settings['tuya_api_key'],
         apiSecret   =   settings['tuya_api_secret'],
         apiDeviceID =   settings['tuya_api_device_id'])
-    for tuya in error_tuyas:
+    def set_cloud_state(tuya):
         print("----=----")
         device_id = tuya['id']
         device_type = tuya['product_type']
@@ -126,3 +153,7 @@ if error_tuyas:
         result = urllib.request.urlopen(f"http://localhost/plugins/NullLights/api/tuya/save/{get_args}&error={error}&target_state=-1")
         print(f"GET ARGs: {get_args}")
         print(f"Error: {error}")
+    # Create a ThreadPoolExecutor with a maximum of 4 threads (to match the number of bulbs)
+    with ThreadPoolExecutor(max_workers=len(error_tuyas)) as executor:
+        # Submit the turn_on_bulb function for each bulb
+        executor.map(set_cloud_state, error_tuyas)
