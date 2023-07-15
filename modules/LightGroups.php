@@ -81,6 +81,7 @@ class LightGroups {
         foreach($lights as $light){
             $light['state'] = 0; // default to off
             $light['error'] = 0; // assume no error
+            $light['target_state'] = -1; // assume no error
             LightGroups::GetStateFromWemoMembers($light);
             LightGroups::GetStateFromTuyaMembers($light);
             $save = RoomLightsGroup::SaveLight($light);
@@ -103,6 +104,7 @@ class LightGroups {
             Services::Log("LightGroups::SyncStates","wemo: ".$wemo['name']." [".$wemo['state']."] [".$wemo['error']."]");
             if((int)$wemo['state'] == 1) $light['state'] = 1;
             if((int)$wemo['state'] == 2) $light['state'] = 2;
+            if((int)$wemo['target_state'] != -1) $light['target_state'] = (int)$wemo['target_state'];
             if((int)$wemo['error'] == 1) $light['error'] = 1;
         }
         Services::Log("LightGroups::SyncStates","state: ".$light['state']);
@@ -124,6 +126,7 @@ class LightGroups {
             Services::Log("LightGroups::SyncStates","tuya: ".$tuya['name']." [".$tuya['state']."] [".$tuya['error']."]");
             if((int)$tuya['state'] == 1) $light['state'] = 1;
             if((int)$tuya['state'] == 2) $light['state'] = 2;
+            if((int)$tuya['target_state'] != -1) $light['target_state'] = (int)$tuya['target_state'];
             if((int)$tuya['error'] == 1) $light['error'] = 1;
         }
         Services::Log("LightGroups::SyncStates","state: ".$light['state']);
