@@ -44,6 +44,14 @@ class LightGroups {
             if($wemo['target_state'] != -1 || $wemo['state'] != $state) $success = false;
         }
         if(!Tuya::SetGroupState($light_id,$state)) $success = false;
+        $govees = GoveeLights::LightGroup($light_id);
+        foreach($govees as $govee){
+            $govee['target_state'] = $state;
+            GoveeLights::SaveGovee($govee);
+            Govee::SetState($govee);
+            $govee = GoveeLights::MacAddress($govee['mac_address']);
+            if($govee['target_state'] != -1 || $govee['state'] != $state) $success = false;
+        }
         // go through the tuya devices
         if($success){
             $group['target_state'] = -1;
@@ -84,6 +92,7 @@ class LightGroups {
             $light['target_state'] = -1; // assume no error
             LightGroups::GetStateFromWemoMembers($light);
             LightGroups::GetStateFromTuyaMembers($light);
+            LightGroups::GetStateFromGoveeMembers($light);
             $save = RoomLightsGroup::SaveLight($light);
             Services::Log("LightGroups::SyncStates","save error: ".$save['error']);
             RoomLightLogs::SaveLog($light);
@@ -106,6 +115,28 @@ class LightGroups {
             if((int)$wemo['state'] == 2) $light['state'] = 2;
             if((int)$wemo['target_state'] != -1) $light['target_state'] = (int)$wemo['target_state'];
             if((int)$wemo['error'] == 1) $light['error'] = 1;
+        }
+        Services::Log("LightGroups::SyncStates","state: ".$light['state']);
+        Services::Log("LightGroups::SyncStates","error: ".$light['error']);
+        //RoomLightLogs::SaveLog($light);
+        //Services::Log("LightGroups::SyncStates","log guid: ".$save['row']['guid']);
+    }
+    /**
+     * get light group state from light group members
+     * (call this after observing individual wemo states)
+     * @param array $light the light group object as from RoomLightsGroup::LightId($light_id);
+     */
+    public static function GetStateFromGoveeMembers(&$light){
+        Services::Log("LightGroups::SyncStates","GoveeMembers:".$light['name']);
+        $govees = GoveeLights::LightGroup($light['id']);
+        Services::Log("LightGroups::SyncStates","govee: ".count($govees));
+        if(count($govees) == 0) return;
+        foreach($govees as $govee){
+            Services::Log("LightGroups::SyncStates","govee: ".$govee['name']." [".$govee['state']."] [".$govee['error']."]");
+            if((int)$govee['state'] == 1) $light['state'] = 1;
+            if((int)$govee['state'] == 2) $light['state'] = 2;
+            if((int)$govee['target_state'] != -1) $light['target_state'] = (int)$govee['target_state'];
+            if((int)$govee['error'] == 1) $light['error'] = 1;
         }
         Services::Log("LightGroups::SyncStates","state: ".$light['state']);
         Services::Log("LightGroups::SyncStates","error: ".$light['error']);

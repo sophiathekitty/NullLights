@@ -101,11 +101,11 @@ ul .lights a{
 
 [type="light"][subtype="rope"][state="0"],
 .room.card .lights [type="light"][subtype="rope"][state="0"] {
-    background-image: none, url(/plugins/NullLights/img/ceiling_off.png);
+    background-image: none, url(/plugins/NullLights/img/led-off.png);
 }
 [type="light"][subtype="rope"][state="1"],
 .room.card .lights [type="light"][subtype="rope"][state="1"] {
-    background-image: none, url(/plugins/NullLights/img/ceiling_on.png);
+    background-image: none, url(/plugins/NullLights/img/led-on.png);
 }
 [type="light"][subtype="inquisition"][state="0"],
 .room.card .lights [type="light"][subtype="inquisition"][state="0"] {
@@ -213,11 +213,11 @@ Target States
 
 [type="light"][subtype="rope"][state="0"][target_state="1"],
 .room.card .lights [type="light"][subtype="rope"][state="0"][target_state="1"] {
-    background-image: url(/plugins/NullLights/img/light-on.png), url(/plugins/NullLights/img/ceiling_off.png);
+    background-image: url(/plugins/NullLights/img/light-on.png), url(/plugins/NullLights/img/led-off.png);
 }
 [type="light"][subtype="rope"][state="1"][target_state="0"],
 .room.card .lights [type="light"][subtype="rope"][state="1"][target_state="0"] {
-    background-image: url(/plugins/NullLights/img/light-off.png), url(/plugins/NullLights/img/ceiling_on.png);
+    background-image: url(/plugins/NullLights/img/light-off.png), url(/plugins/NullLights/img/led-on.png);
 }
 [type="light"][subtype="inquisition"][state="0"][target_state="1"],
 .room.card .lights [type="light"][subtype="inquisition"][state="0"][target_state="1"] {

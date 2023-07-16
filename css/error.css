@@ -76,11 +76,11 @@
 
 [type="light"][subtype="rope"][state="0"][error="1"],
 .room.card .lights [type="light"][subtype="rope"][state="0"][error="1"] {
-    background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/ceiling_off.png);
+    background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/led-off.png);
 }
 [type="light"][subtype="rope"][state="1"][error="1"],
 .room.card .lights [type="light"][subtype="rope"][state="1"][error="1"] {
-    background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/ceiling_on.png);
+    background-image: url(/plugins/NullLights/img/warning.png), url(/plugins/NullLights/img/led-on.png);
 }
 [type="light"][subtype="inquisition"][state="0"][error="1"],
 .room.card .lights [type="light"][subtype="inquisition"][state="0"][error="1"] {

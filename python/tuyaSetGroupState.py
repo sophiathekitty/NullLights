@@ -31,7 +31,7 @@ for tuya in tuyas['tuyas']:
 def set_state(tuya):
     device_id = tuya['id']
     ip_address = tuya['url']
-    local_key = tuya['local_key']
+    local_key = tuya['local_key'].replace("&apos;", "'").replace("&quot;", "\"")
     device_type = tuya['product_type']
     print("----")
     print(f"Device: {tuya['name']}")

@@ -210,6 +210,7 @@ class RoomLightsGroup extends clsModel {
         if(strpos(strtolower($RoomLight['name']),"painting") > -1) return "painting";
         if(strpos(strtolower($RoomLight['name']),"lava") > -1) return "lava";
         if(strpos(strtolower($RoomLight['name']),"rope") > -1) return "rope";
+        if(strpos(strtolower($RoomLight['name']),"strip") > -1) return "rope";
         if(strpos(strtolower($RoomLight['name']),"ambient") > -1) return "ambient";
         if(strpos(strtolower($RoomLight['name']),"mood") > -1) return "mood";
         if(strpos(strtolower($RoomLight['name']),"lamp") > -1) return "lamp";
@@ -285,6 +286,34 @@ class RoomLightsGroup extends clsModel {
             if($light['room_id'] == 0) $light = RoomLightsGroup::FindRoomLightRoom($light);
             $save = RoomLightsGroup::SaveLight($light);
             return TuyaLights::SaveTuya($data);
+        }
+        return ["error"=>"not added to a group?"];
+    }
+    /**
+     * add a govee to a room light group (or create a new room light group if no match found)
+     * @param array $data the govee data object
+     * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
+     */
+    public static function GroupGovee($data){
+        $instance = RoomLightsGroup::GetInstance();
+        if(!isset($data['name'])) return ['error'=>"name field missing"];
+        $name = $instance->RemoveTailNumber($data['name']);
+        if(isset($data['light_id']) && (int)$data['light_id'] != 0) $light = RoomLightsGroup::LightId($data['light_id']);
+        else $light = RoomLightsGroup::LightName($name);
+        if(is_null($light)){
+            // add a new light group
+            $light = $instance->CleanData($data);
+            $light['name'] = $name;
+            $save = RoomLightsGroup::SaveLight($light);
+            if(isset($save['last_insert_id'])){
+                $data['light_id'] = $save['last_insert_id'];
+                $save['govee_save'] = GoveeLights::SaveGovee($data);
+                return $save;
+            }
+        } else {
+            // just update the govee
+            $data['light_id'] = $light['id'];
+            return GoveeLights::SaveGovee($data);
         }
         return ["error"=>"not added to a group?"];
     }

@@ -4,6 +4,8 @@ Services::Log("NullLights::EveryMinute","WeMoSync::Observe");
 WeMoSync::Observe();
 Services::Log("NullLights::EveryMinute","TuyaSync::Observe");
 TuyaSync::Observe();
+Services::Log("NullLights::EveryMinute","GoveeSync::Observe");
+GoveeSync::Observe();
 Services::Log("NullLights::EveryMinute","LightGroups::SyncStatesFromMembers");
 LightGroups::SyncStatesFromMembers();
 if(Servers::IsMain() || Settings::LoadSettingsVar("light_automation_mode","main") == "practice"){
@@ -17,7 +19,7 @@ if(Servers::IsMain() || Settings::LoadSettingsVar("light_automation_mode","main"
         $lights = WeMoLights::AllLights();
         foreach($lights as $light){
             if(AutomateLight($light)){
-                //Services::Log("NullLights::AutomationLegacy","Automated: ".$light['name']." ".$light['state']);
+                Services::Log("NullLights::AutomationLegacy","Automated: ".$light['name']." ".$light['state']);
                 //Settings::SaveSettingsVar("service-AutomationLegacy::".$light['name'],date("H:i:s"));
             }
         }
