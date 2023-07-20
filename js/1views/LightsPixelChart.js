@@ -2,7 +2,7 @@
  * view for displaying pixel charts of when the lights are on or off.
  */
 class LightsPixelChart extends View {
-    constructor(debug = false){
+    constructor(debug = true){
         super(new LightsHourlyChart(debug),
             new Template("lights_pixel","/plugins/NullLights/templates/chart.html"),
             null,

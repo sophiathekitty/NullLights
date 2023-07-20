@@ -1,6 +1,7 @@
 <?php
 /**
  * module for creating archives from logs and deep archives from archives
+ * @depreciated use RoomLightGroupArchiver to work with the RoomLightsGroup instead
  */
 class WeMoArchiver {
     /**
@@ -162,7 +163,7 @@ class RoomLightGroupArchiver {
      */
     public static function ArchiveYesterday($roomLightGroup) {
         if (defined("ARCHIVE_SERVICE")) {
-            Services::Log(constant("ARCHIVE_SERVICE"), "ArchiveYesterday");
+            Services::Log(constant("ARCHIVE_SERVICE"), "RoomLightGroupArchiver::ArchiveYesterday");
         }
         return RoomLightGroupArchiver::ArchiveRoomLightGroupLogsYesterday($roomLightGroup['light_id']);
     }
@@ -174,7 +175,7 @@ class RoomLightGroupArchiver {
      */
     public static function HourlyToArchive(array $hourly) {
         if (defined("ARCHIVE_SERVICE")) {
-            Services::Log(constant("ARCHIVE_SERVICE"), "HourlyToArchive");
+            Services::Log(constant("ARCHIVE_SERVICE"), "RoomLightGroupArchiver::HourlyToArchive");
         }
         $archive = [];
         for ($i = 0; $i < 24; $i++) {
@@ -191,7 +192,7 @@ class RoomLightGroupArchiver {
      */
     public static function ArchiveToHourly(array $archive, $hourly = null) {
         if (defined("ARCHIVE_SERVICE")) {
-            Services::Log(constant("ARCHIVE_SERVICE"), "ArchiveToHourly");
+            Services::Log(constant("ARCHIVE_SERVICE"), "RoomLightGroupArchiver::ArchiveToHourly");
         }
         if (is_null($hourly)) {
             $hourly = RoomLightChart::EmptyHourly();
@@ -221,7 +222,7 @@ class RoomLightGroupArchiver {
      */
     public static function ArchiveRoomLightGroupLogsYesterday($light_id) {
         if (defined("ARCHIVE_SERVICE")) {
-            Services::Log(constant("ARCHIVE_SERVICE"), "ArchiveRoomLightGroupLogsYesterday $light_id " . date("Y-m-d", time() - DaysToSeconds(1)));
+            Services::Log(constant("ARCHIVE_SERVICE"), "RoomLightGroupArchiver::ArchiveRoomLightGroupLogsYesterday $light_id " . date("Y-m-d", time() - DaysToSeconds(1)));
         }
         return RoomLightGroupArchiver::ArchiveRoomLightGroupLogsDate($light_id, date("Y-m-d", time() - DaysToSeconds(1)));
     }
@@ -242,12 +243,12 @@ class RoomLightGroupArchiver {
             $errors += $l['error'];
         }
         $archive = RoomLightGroupArchiver::HourlyToArchive($log);
-        $archive['light_id'] = $light_id;
+        $archive['id'] = $light_id;
         $archive['errors'] = $errors;
         $res = RoomLightArchives::SaveLog($archive);
         Debug::Log("RoomLightGroupArchives::SaveLog", $res);
         if (defined("ARCHIVE_SERVICE")) {
-            Services::Log(constant("ARCHIVE_SERVICE"), "ArchiveRoomLightGroupLogsDate err? " . $res['error']);
+            if($res['error'] != "") Services::Error(constant("ARCHIVE_SERVICE"), "ArchiveRoomLightGroupLogsDate err? " . $res['error']);
         }
         return $res;
     }
@@ -279,7 +280,7 @@ class RoomLightGroupArchiver {
         }
         for ($i = 1; $i <= 7; $i++) {
             $a = RoomLightGroupArchiver::RoomLightGroupArchiveAverageHours($week[$i]['day'], $week[$i]['count']);
-            $a['light_id'] = $light_id;
+            $a['id'] = $light_id;
             $a['day_of_week'] = $i;
             $a['month'] = $month;
             RoomLightDeepArchives::SaveLog($a);

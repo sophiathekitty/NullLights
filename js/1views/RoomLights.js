@@ -71,6 +71,7 @@ class RoomLightsView extends View {
         } else if(this.debug) console.error("RoomLightsView::Display",room_id,"Room Element Missing");
     }
     refresh(room_id){
+        if(this.charts) this.charts.refresh(room_id);
         if(this.debug) console.info("RoomLightsView::Refresh",room_id);
         if($("#floors [room_id="+room_id+"]").length){
             this.display(room_id);
