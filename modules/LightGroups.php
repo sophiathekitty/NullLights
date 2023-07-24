@@ -3,6 +3,7 @@
  * Make sure that all the wemo's have a light group wrapper
  */
 function FindWemoLightGroups(){
+    Services::Log("NullLights::EveryTenMinute","FindWemoLightGroups()");
     LightGroups::FindWemoLightGroups();
     /*
     $wemos = WeMoLights::UnGrouped();
@@ -60,12 +61,59 @@ class LightGroups {
         }
     }
     /**
+     * prune empty light groups and their logs
+     */
+    public static function PruneEmptyGroups(){
+        $groups = RoomLightsGroup::AllLights();
+        foreach($groups as $group){
+            $wemos = WeMoLights::LightGroup($group['id']);
+            $tuyas = TuyaLights::LightGroup($group['id']);
+            $govees = GoveeLights::LightGroup($group['id']);
+            if(count($wemos) + count($tuyas) + count($govees) == 0){
+                // empty group time to delete
+                if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$group['name']);
+                $save = RoomLightsGroup::DeleteLight($group['id']);
+                if(defined("DEVICE_GROUP_SERVICE") && $save['error'] != "") Services::Error(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$save['error']);
+                if(defined("DEVICE_GROUP_SERVICE") && $save['error'] != "") Services::Error(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$save['sql']);
+                $save = RoomLightLogs::DeleteLight($group['id']);
+                if(defined("DEVICE_GROUP_SERVICE") && $save['error'] != "") Services::Error(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$save['error']);
+                if(defined("DEVICE_GROUP_SERVICE") && $save['error'] != "") Services::Error(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$save['sql']);
+                $save = RoomLightArchives::DeleteLight($group['id']);
+                if(defined("DEVICE_GROUP_SERVICE") && $save['error'] != "") Services::Error(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$save['error']);
+                if(defined("DEVICE_GROUP_SERVICE") && $save['error'] != "") Services::Error(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$save['sql']);
+                $save = RoomLightDeepArchives::DeleteLight($group['id']);
+                if(defined("DEVICE_GROUP_SERVICE") && $save['error'] != "") Services::Error(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$save['error']);
+                if(defined("DEVICE_GROUP_SERVICE") && $save['error'] != "") Services::Error(constant("DEVICE_GROUP_SERVICE"),"LightGroups::PruneEmptyGroup ".$save['sql']);
+            }
+        }
+    }
+    /**
      * Make sure that all the wemo's have a light group wrapper
      */
     public static function FindWemoLightGroups(){
-        $wemos = WeMoLights::UnGrouped();
+        Services::Log("NullLights::EveryTenMinute","LightGroups::FindWemoLightGroups()");
+        //$wemos = WeMoLights::UnGrouped();
+        $wemos = WeMoLights::AllLights();
         foreach($wemos as $wemo){
             LightGroups::FindWemoGroup($wemo);
+        }
+    }
+    /**
+     * Make sure that all the wemo's have a light group wrapper
+     */
+    public static function FindLightGroups(){
+        if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"LightGroups::FindLightGroups()");
+        $wemos = WeMoLights::AllLights();
+        foreach($wemos as $wemo){
+            LightGroups::FindWemoGroup($wemo);
+        }
+        $tuyas = TuyaLights::AllLights();
+        foreach($tuyas as $tuya){
+            LightGroups::FindTuyaGroup($tuya);
+        }
+        $govees = GoveeLights::AllLights();
+        foreach($govees as $govee){
+            LightGroups::FindGoveeGroup($govee);
         }
     }
     /**
@@ -74,8 +122,31 @@ class LightGroups {
      * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
      */
     public static function FindWemoGroup($wemo){
+        if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"LightGroups::FindWemoGroup()");
         $save = RoomLightsGroup::GroupWemo($wemo);
         Debug::Log("FindWemoLightGroup",$wemo,$save);
+        return $save;
+    }
+    /**
+     * find the group for a tuya
+     * @param array $tuya the tuya data array
+     * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
+     */
+    public static function FindTuyaGroup($tuya){
+        if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"LightGroups::FindTuyaGroup()");
+        $save = RoomLightsGroup::GroupTuya($tuya);
+        Debug::Log("FindTuyaLightGroup",$tuya,$save);
+        return $save;
+    }
+    /**
+     * find the group for a govee
+     * @param array $govee the govee data array
+     * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
+     */
+    public static function FindGoveeGroup($govee){
+        if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"LightGroups::FindGoveeGroup()");
+        $save = RoomLightsGroup::GroupGovee($govee);
+        Debug::Log("FindTuyaLightGroup",$govee,$save);
         return $save;
     }
     /**

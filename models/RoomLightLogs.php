@@ -75,6 +75,14 @@ class RoomLightLogs extends clsModel {
         return $instance->Save($data);
     }
     /**
+     * delete light
+     * @param $light_id the id of the light to delete
+     */
+    public static function DeleteLight($light_id){
+        $instance = RoomLightLogs::GetInstance();
+        return $instance->DeleteFieldValue('id',$light_id);
+    }
+    /**
      * load logs for a room light
      * @param string $id the light id of the room light
      * @return array logs for the room light

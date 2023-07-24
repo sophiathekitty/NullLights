@@ -1,6 +1,20 @@
 <?php
 Services::Start("NullLights::EveryTenMinute");
-Services::Log("NullLights::EveryTenMinute","FindWemoLightGroups");
-FindWemoLightGroups();
+define("DEVICE_GROUP_SERVICE","NullLights::EveryTenMinute");
+// make sure all the devices are in the right group
+Services::Log("NullLights::EveryTenMinute","LightGroups::FindLightGroups");
+try{
+    LightGroups::FindLightGroups();
+} catch(Exception $e){
+    Services::Error("NullLights::EveryTenMinute",$e->getMessage());
+}
+// prune empty groups
+Services::Log("NullLights::EveryTenMinute","LightGroups::PruneEmptyGroups");
+try{
+    LightGroups::PruneEmptyGroups();
+} catch(Exception $e){
+    Services::Error("NullLights::EveryTenMinute",$e->getMessage());
+}
+
 Services::Complete("NullLights::EveryTenMinute");
 ?>

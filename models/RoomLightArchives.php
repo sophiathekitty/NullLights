@@ -224,6 +224,14 @@ class RoomLightArchives extends clsModel {
         return $sensors->Save($data);
     }
     /**
+     * delete light
+     * @param $light_id the id of the light to delete
+     */
+    public static function DeleteLight($light_id){
+        $instance = RoomLightArchives::GetInstance();
+        return $instance->DeleteFieldValue('id',$light_id);
+    }
+    /**
      * load recent archives for a room light group
      * @param string $id the mac address of the room light group
      * @param int $days how many days back to go

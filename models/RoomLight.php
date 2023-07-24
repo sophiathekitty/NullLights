@@ -189,6 +189,14 @@ class RoomLightsGroup extends clsModel {
         return $instance->Save($data,['id'=>$data['id']],$remote_data);
     }
     /**
+     * delete light
+     * @param $light_id the id of the light to delete
+     */
+    public static function DeleteLight($light_id){
+        $instance = RoomLightsGroup::GetInstance();
+        return $instance->DeleteFieldValue('id',$light_id);
+    }
+    /**
      * figure out what type of RoomLight this is based on keywords in the name
      * @param array $RoomLight the RoomLight data array
      * @return string light, fan, other
@@ -222,17 +230,65 @@ class RoomLightsGroup extends clsModel {
         return "other";
     }
     /**
+     * add a device to a light group
+     * @param $data the light to add to group
+     * @return array a save report (or error report)
+     */
+    public static function GroupDevice(&$data){
+        if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice");
+        $instance = RoomLightsGroup::GetInstance();
+        if(!isset($data['name'])) return ['error'=>"name field missing"];
+        $name = $instance->RemoveTailNumber($data['name']);
+        if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice::name - $name (".$data['name'].")");
+        //Debug::Log("RoomLightsGroup::GroupDevice::name",["device"=>$data['name'],"group"=>$name]);
+        //if(isset($data['light_id']) && (int)$data['light_id'] != 0) $light = RoomLightsGroup::LightId($data['light_id']);
+        //else $light = RoomLightsGroup::LightName($name);
+        $light = RoomLightsGroup::LightName($name);
+        if(is_null($light) || $light['name'] != $name){
+            // add a new light group
+            if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice - add a new group");
+            //Debug::Log("RoomLightsGroup::GroupDevice","add new group");
+            $light = $instance->CleanDataSkipId($data);
+            $light['name'] = $name;
+            $save = RoomLightsGroup::SaveLight($light);
+            //if($save['error'] != "" && defined("DEVICE_GROUP_SERVICE")) Services::Error(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice:Error - ".$save['error']);
+            if(isset($save['last_insert_id']) && (int)$save['last_insert_id'] != 0){
+                $data['light_id'] = $save['last_insert_id'];
+                if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice - new light id: ".$data['light_id']);
+                return $save;
+            } else {
+                if(defined("DEVICE_GROUP_SERVICE")) Services::Error(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice missing last_insert_id: ".$save['error']);
+                if(defined("DEVICE_GROUP_SERVICE")) Services::Error(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice ".$save['sql']);
+                return ['error'=>"missing last_insert_id. can't add device to group",'light'=>$light,'data'=>$data,'save'=>$save];
+            }
+        } else {
+            // just update the device
+            if(defined("DEVICE_GROUP_SERVICE")) Services::Log(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice - add device to existing group");
+            //Debug::Log("RoomLightsGroup::GroupDevice","add device to existing group");
+            $data['light_id'] = $light['id'];
+            return ['group'=>$light];
+        }
+        if(defined("DEVICE_GROUP_SERVICE")) Services::Error(constant("DEVICE_GROUP_SERVICE"),"RoomLightsGroup::GroupDevice - not added to a group?");
+        return ["error"=>"not added to a group?"];
+    }    
+    /**
      * add a wemo to a room light group (or create a new room light group if no match found)
      * @param array $data the wemo data object
      * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
      */
     public static function GroupWemo($data){
+        Debug::Log("RoomLightsGroup::GroupWemo::wemo",$data);
+        $save = RoomLightsGroup::GroupDevice($data);
+        $save['wemo_save'] = WeMoLights::SaveWeMo($data);
+        Debug::Log("RoomLightsGroup::GroupWemo::save",$save);
+        return $save;
+        /*
         $instance = RoomLightsGroup::GetInstance();
         if(!isset($data['name'])) return ['error'=>"name field missing"];
         $name = $instance->RemoveTailNumber($data['name']);
         if(isset($data['light_id']) && (int)$data['light_id'] != 0) $light = RoomLightsGroup::LightId($data['light_id']);
         else $light = RoomLightsGroup::LightName($name);
-        if(is_null($light)){
+        if(is_null($light) || $light['name'] != $name){
             // add a new light group
             $light = $instance->CleanData($data);
             $light['name'] = $name;
@@ -248,6 +304,7 @@ class RoomLightsGroup extends clsModel {
             return WeMoLights::SaveWeMo($data);
         }
         return ["error"=>"not added to a group?"];
+        */
     }
     /**
      * add a tuya to a room light group (or create a new room light group if no match found)
@@ -255,6 +312,12 @@ class RoomLightsGroup extends clsModel {
      * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
      */
     public static function GroupTuya($data){
+        Debug::Log("RoomLightsGroup::GroupTuya::tuya",$data);
+        $save = RoomLightsGroup::GroupDevice($data);
+        $save['tuya_save'] = TuyaLights::SaveTuya($data);
+        Debug::Log("RoomLightsGroup::GroupTuya::save",$save);
+        return $save;
+        /*
         $instance = RoomLightsGroup::GetInstance();
         if(!isset($data['name'])) return ['error'=>"name field missing"];
         $name = $instance->RemoveTailNumber($data['name']);
@@ -288,6 +351,7 @@ class RoomLightsGroup extends clsModel {
             return TuyaLights::SaveTuya($data);
         }
         return ["error"=>"not added to a group?"];
+        */
     }
     /**
      * add a govee to a room light group (or create a new room light group if no match found)
@@ -295,6 +359,12 @@ class RoomLightsGroup extends clsModel {
      * @return array save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
      */
     public static function GroupGovee($data){
+        Debug::Log("RoomLightsGroup::GroupGovee::govee",$data);
+        $save = RoomLightsGroup::GroupDevice($data);
+        $save['govee_save'] = GoveeLights::SaveGovee($data);
+        Debug::Log("RoomLightsGroup::GroupGovee::save",$save);
+        return $save;
+        /*
         $instance = RoomLightsGroup::GetInstance();
         if(!isset($data['name'])) return ['error'=>"name field missing"];
         $name = $instance->RemoveTailNumber($data['name']);
@@ -316,6 +386,7 @@ class RoomLightsGroup extends clsModel {
             return GoveeLights::SaveGovee($data);
         }
         return ["error"=>"not added to a group?"];
+        */
     }
     /**
      * load all the wemo lights in a room

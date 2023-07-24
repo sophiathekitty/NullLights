@@ -9,7 +9,11 @@ foreach($lights as $light){
 */
 $lights = RoomLightsGroup::AllLights();
 foreach($lights as $light){
-    RoomLightGroupArchiver::DeepArchiveRoomLightGroupArchiveMonth($light['id'],date("m",time()-WeeksToSeconds(4)));
+    try{
+        RoomLightGroupArchiver::DeepArchiveRoomLightGroupArchiveMonth($light['id'],date("m",time()-WeeksToSeconds(4)));
+    } catch(Exception $e) {
+        Services::Error("NullLights::EveryMinute",$e->getMessage());
+    }
 }
 Services::Complete("RoomLightGroupArchiver::DeepArchive");
 ?>

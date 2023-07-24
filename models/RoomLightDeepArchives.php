@@ -231,6 +231,15 @@ class RoomLightDeepArchives extends clsModel {
         $data['guid'] = md5($data['id'].$data['day_of_week'].$data['month']);
         return $sensors->Save($data);
     }
+    /**
+     * delete light
+     * @param $light_id the id of the light to delete
+     */
+    public static function DeleteLight($light_id){
+        $instance = RoomLightDeepArchives::GetInstance();
+        return $instance->DeleteFieldValue('id',$light_id);
+    }
+
 }
 if(defined('VALIDATE_TABLES')){
     clsModel::$models[] = new RoomLightDeepArchives();
