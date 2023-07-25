@@ -3,25 +3,25 @@ Services::Start("NullLights::EveryMinute");
 Services::Log("NullLights::EveryMinute","WeMoSync::Observe");
 try{
     WeMoSync::Observe();
-} catch(Exception $e) {
+} catch(Error $e) {
     Services::Error("NullLights::EveryMinute",$e->getMessage());
 }
 Services::Log("NullLights::EveryMinute","TuyaSync::Observe");
 try{
     TuyaSync::Observe();
-} catch(Exception $e) {
+} catch(Error $e) {
     Services::Error("NullLights::EveryMinute",$e->getMessage());
 }
 Services::Log("NullLights::EveryMinute","GoveeSync::Observe");
 try{
     GoveeSync::Observe();
-} catch(Exception $e) {
+} catch(Error $e) {
     Services::Error("NullLights::EveryMinute",$e->getMessage());
 }
 Services::Log("NullLights::EveryMinute","LightGroups::SyncStatesFromMembers");
 try{
     LightGroups::SyncStatesFromMembers();
-} catch(Exception $e) {
+} catch(Error $e) {
     Services::Error("NullLights::EveryMinute",$e->getMessage());
 }
 if(Servers::IsMain() || Settings::LoadSettingsVar("light_automation_mode","main") == "practice"){
@@ -40,7 +40,7 @@ if(Servers::IsMain() || Settings::LoadSettingsVar("light_automation_mode","main"
                     //Settings::SaveSettingsVar("service-AutomationLegacy::".$light['name'],date("H:i:s"));
                 }
             }
-        } catch(Exception $e) {
+        } catch(Error $e) {
             Services::Error("NullLights::EveryMinute",$e->getMessage());
         }
     //echo "\nlegacy light automation done\n";

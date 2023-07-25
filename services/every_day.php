@@ -6,7 +6,7 @@ $lights = RoomLightsGroup::AllLights();
 foreach($lights as $light){
     try{
         RoomLightGroupArchiver::ArchiveRoomLightGroupLogsYesterday($light['id']);
-    } catch(Exception $e){
+    } catch(Error $e){
     Services::Error("RoomLightGroupArchiver::Archive",$e->getMessage());
     }
 }

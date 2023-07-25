@@ -11,7 +11,7 @@ $lights = RoomLightsGroup::AllLights();
 foreach($lights as $light){
     try{
         RoomLightGroupArchiver::DeepArchiveRoomLightGroupArchiveMonth($light['id'],date("m",time()-WeeksToSeconds(4)));
-    } catch(Exception $e) {
+    } catch(Error $e) {
         Services::Error("NullLights::EveryMinute",$e->getMessage());
     }
 }

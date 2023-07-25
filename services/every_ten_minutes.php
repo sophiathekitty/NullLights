@@ -5,14 +5,14 @@ define("DEVICE_GROUP_SERVICE","NullLights::EveryTenMinute");
 Services::Log("NullLights::EveryTenMinute","LightGroups::FindLightGroups");
 try{
     LightGroups::FindLightGroups();
-} catch(Exception $e){
+} catch(Error $e){
     Services::Error("NullLights::EveryTenMinute",$e->getMessage());
 }
 // prune empty groups
 Services::Log("NullLights::EveryTenMinute","LightGroups::PruneEmptyGroups");
 try{
     LightGroups::PruneEmptyGroups();
-} catch(Exception $e){
+} catch(Error $e){
     Services::Error("NullLights::EveryTenMinute",$e->getMessage());
 }
 
