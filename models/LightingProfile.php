@@ -58,11 +58,11 @@ class LightingProfile extends clsModel {
         return LightingProfile::$instance;
     }
     /**
-     * load all lights
-     * sorted by type and then subtype
-     * @return array all of the lighting profiles lights
+     * load all lighting profiles
+     * sorted by room_id and then type
+     * @return array all of the lighting profiles
      */
-    public static function AllLights(){
+    public static function AllProfiles(){
         $instance = LightingProfile::GetInstance();
         return $instance->LoadAllWhere(null,["room_id"=>"ASC","type"=>"ASC"]);
     }
@@ -90,13 +90,13 @@ class LightingProfile extends clsModel {
         return $instance->Save($data,['mac_address'=>$data['mac_address']]);
     }
     /**
-     * load all of the devices in a room
+     * load all of the lighting profiles in a room
      * @param int $room_id the room's id
      * @return array list of lighting profiles data arrays
      */
-    public static function RoomDevices($room_id){
+    public static function RoomId($room_id){
         $instance = LightingProfile::GetInstance();
-        return $instance->LoadAllWhere(['room_id'=>$room_id]);
+        return $instance->LoadAllWhere(['room_id'=>$room_id],['light_level_min'=>"ASC",'light_level_max'=>"ASC"]);
     }
 
 }

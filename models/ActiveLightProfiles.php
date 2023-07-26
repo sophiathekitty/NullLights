@@ -106,7 +106,15 @@ class ActiveLightProfiles extends clsModel {
      */
     public static function ClearLightingProfile($data){
         $instance = ActiveLightProfiles::GetInstance();
-        $instance->DeleteFieldValue('room_id',$data['room_id']);
+        if(isset($data['room_id'])) $instance->DeleteFieldValue('room_id',$data['room_id']);
+        else Debug::Log("LightingProfile::ClearLightingProfile", "[Error]Missing room_id",$data);
+    }
+    /**
+     * prune profiles that are over a day old 
+     */
+    public static function PruneOld(){
+        $instance = ActiveLightProfiles::GetInstance();
+        $instance->PruneField("created",DaysToSeconds(1));
     }
 }
 if(defined('VALIDATE_TABLES')){

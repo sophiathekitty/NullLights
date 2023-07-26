@@ -29,9 +29,9 @@ class LightProfileDevice extends clsModel {
         ],[
             'Field'=>"state",
             'Type'=>"int(11)",
-            'Null'=>"NO",
+            'Null'=>"YES",
             'Key'=>"",
-            'Default'=>"0",
+            'Default'=>null,
             'Extra'=>""
         ],[
             'Field'=>"percent",

@@ -1,4 +1,5 @@
 <?php
+define("LIGHT_PROFILE_SERVICES","NullLights::EveryMinute");
 Services::Start("NullLights::EveryMinute");
 Services::Log("NullLights::EveryMinute","WeMoSync::Observe");
 try{
@@ -21,6 +22,15 @@ try{
 Services::Log("NullLights::EveryMinute","LightGroups::SyncStatesFromMembers");
 try{
     LightGroups::SyncStatesFromMembers();
+} catch(Error $e) {
+    Services::Error("NullLights::EveryMinute",$e->getMessage());
+}
+Services::Log("NullLights::EveryMinute","LightProfile::SetLightingProfilesFromRoomUse");
+define("PROFILE_SERVICE","NullLights::EveryMinute");
+try{
+    LightProfile::SetLightingProfilesFromRoomUse();
+} catch(Exception $e) {
+    Services::Warn("NullLights::EveryMinute",$e->getMessage());
 } catch(Error $e) {
     Services::Error("NullLights::EveryMinute",$e->getMessage());
 }

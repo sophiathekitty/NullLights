@@ -1,0 +1,14 @@
+ul.light-profiles .edit {
+    display: none;
+}
+span.light_profiles span.light_profile {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#floors .room.card .details ul.light-profiles::before{
+    content: 'Lighting Profile';
+}
