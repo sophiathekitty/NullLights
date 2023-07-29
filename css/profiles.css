@@ -1,4 +1,4 @@
-ul.light-profiles .edit {
+ul.current-light-profile .edit {
     display: none;
 }
 span.light_profiles span.light_profile {
@@ -9,6 +9,9 @@ span.light_profiles span.light_profile {
     background-repeat: no-repeat;
     background-size: contain;
 }
+#floors .room.card .details ul.current-light-profile::before{
+    content: 'Active Lighting Profile';
+}
 #floors .room.card .details ul.light-profiles::before{
-    content: 'Lighting Profile';
+    content: 'Lighting Profiles';
 }

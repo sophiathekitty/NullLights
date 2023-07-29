@@ -13,8 +13,8 @@ class AutomationLogs extends clsModel {
             'Default'=>"",
             'Extra'=>""
         ],[
-            'Field'=>"mac_address",
-            'Type'=>"varchar(100)",
+            'Field'=>"light_id",
+            'Type'=>"int(11)",
             'Null'=>"NO",
             'Key'=>"",
             'Default'=>"",
@@ -54,35 +54,35 @@ class AutomationLogs extends clsModel {
      * create an automation log
      * @param string $event the event name
      * @param string $details the details about the event (what conditions were true or false)
-     * @param string $mac_address the light's mac address
+     * @param string $light_id the light's mac address
      * @return array a save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
      */
-    public static function CreateAutomationLog($event,$details, $mac_address){
-        return AutomationLogs::SaveLog(['event'=>$event,"details"=>$details,'mac_address'=>$mac_address]);
+    public static function CreateAutomationLog($event,$details, $light_id){
+        return AutomationLogs::SaveLog(['event'=>$event,"details"=>$details,'light_id'=>$light_id]);
     }
     /**
      * get the most recent automation event for a light
-     * @param string $mac_address the light's mac address
+     * @param string $light_id the light's mac address
      * @param string $event the event name
      * @return 
      */
-    public static function GetLastAutomationLightLog($mac_address,$event){
+    public static function GetLastAutomationLightLog($light_id,$event){
         $log = AutomationLogs::GetInstance();
-        return $log->LoadWhere(['mac_address'=>$mac_address,'event'=>$event],['created'=>'DESC']);
+        return $log->LoadWhere(['light_id'=>$light_id,'event'=>$event],['created'=>'DESC']);
     }
     /**
      * calculate the time since the last automation event for a light
-     * @param array $wemo light data array needed for mac address `$wemo['mac_address']`
+     * @param array $device light data array needed for mac address `$device['id']`
      * @param string $event the event name
      * @return int time in seconds since last time this event happened
      */
-    public static function TimeSinceAutomaticLightEvent($wemo,$event){
-        $event = AutomationLogs::GetLastAutomationLightLog($wemo['mac_address'],$event);
+    public static function TimeSinceAutomaticLightEvent($device,$event){
+        $event = AutomationLogs::GetLastAutomationLightLog($device['id'],$event);
         return time() - strtotime($event['datetime']);
     }
     /**
      * save a new log
-     * @notes use `AutomationLogs::CreateAutomationLog($event,$details, $mac_address)`
+     * @notes use `AutomationLogs::CreateAutomationLog($event,$details, $light_id)`
      * @param array $data log data array 
      * @return array a save report ['last_insert_id'=>$id,'error'=>clsDB::$db_g->get_err(),'sql'=>$sql,'row'=>$row]
      */
@@ -90,7 +90,7 @@ class AutomationLogs extends clsModel {
         $sensors = AutomationLogs::GetInstance();
         $sensors->PruneField('created',DaysToSeconds(Settings::LoadSettingsVar('automation_log_days',5)));
         $data = $sensors->CleanData($data);
-        $data['guid'] = md5($data['mac_address'].date("Y-m-d H:i:s").$data['event']);
+        $data['guid'] = md5($data['light_id'].date("Y-m-d H:i:s").$data['event']);
         return $sensors->Save($data);
     }
 }

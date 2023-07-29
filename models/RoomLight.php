@@ -389,10 +389,10 @@ class RoomLightsGroup extends clsModel {
         */
     }
     /**
-     * load all the wemo lights in a room
+     * load all the lights in a room
      * @param int $room_id the room's id
      * @param string|null $subtype filter by subtype
-     * @return array list of wemo data arrays
+     * @return array list of data arrays
      */
     public static function RoomLightsGroupLight($room_id,$subtype = null){
         return RoomLightsGroup::RoomDevices($room_id,"light",$subtype);

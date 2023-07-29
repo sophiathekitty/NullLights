@@ -39,56 +39,56 @@ class AutomationRuleHandler {
          */
         switch($condition['cmd']){
             case "OnDuringTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OnDuringTime($wemo,$condition['vals'][1]) > (float)$condition['vals'][0]),"val"=>WemoTime::OnDuringTime($wemo,$condition['vals'][1])];
-                //return (isset($condition['val']) && WemoTime::OnDuringTime($wemo,$condition['vals'][1]) > (float)$condition['vals'][0]);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OnDuringTime($wemo,$condition['vals'][1]) > (float)$condition['vals'][0]),"val"=>RoomLightTime::OnDuringTime($wemo,$condition['vals'][1])];
+                //return (isset($condition['val']) && RoomLightTime::OnDuringTime($wemo,$condition['vals'][1]) > (float)$condition['vals'][0]);
             case "LightOnTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OnTime($wemo) > (float)$condition['val']),"val"=>WemoTime::OnTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::OnTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OnTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::OnTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::OnTime($wemo) > (float)$condition['val']);
             case "LightOffTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OffTime($wemo) > (float)$condition['val']),"val"=>WemoTime::OffTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::OffTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OffTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::OffTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::OffTime($wemo) > (float)$condition['val']);
             case "LightOnMinutes":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OnMinutes($wemo) > (float)$condition['val']),"val"=>WemoTime::OnMinutes($wemo)];
-                //return (isset($condition['val']) && WemoTime::OnMinutes($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OnMinutes($wemo) > (float)$condition['val']),"val"=>RoomLightTime::OnMinutes($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::OnMinutes($wemo) > (float)$condition['val']);
             case "LightOffMinutes":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OffMinutes($wemo) > (float)$condition['val']),"val"=>WemoTime::OffMinutes($wemo)];
-                //return (isset($condition['val']) && WemoTime::OffMinutes($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OffMinutes($wemo) > (float)$condition['val']),"val"=>RoomLightTime::OffMinutes($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::OffMinutes($wemo) > (float)$condition['val']);
             case "LightOnHours":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OnHours($wemo) > (float)$condition['val']),"val"=>WemoTime::OnHours($wemo)];
-                //return (isset($condition['val']) && WemoTime::OnHours($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OnHours($wemo) > (float)$condition['val']),"val"=>RoomLightTime::OnHours($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::OnHours($wemo) > (float)$condition['val']);
             case "LightOffHours":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OffHours($wemo) > (float)$condition['val']),"val"=>WemoTime::OffHours($wemo)];
-                //return (isset($condition['val']) && WemoTime::OffHours($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OffHours($wemo) > (float)$condition['val']),"val"=>RoomLightTime::OffHours($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::OffHours($wemo) > (float)$condition['val']);
             case "LightOnDays":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OnDays($wemo) > (float)$condition['val']),"val"=>WemoTime::OnDays($wemo)];
-                //return (isset($condition['val']) && WemoTime::OnDays($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OnDays($wemo) > (float)$condition['val']),"val"=>RoomLightTime::OnDays($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::OnDays($wemo) > (float)$condition['val']);
             case "LightOffDays":
-                return ["pass"=>(isset($condition['val']) && WemoTime::OffDays($wemo) > (float)$condition['val']),"val"=>WemoTime::OffDays($wemo)];
-                //return (isset($condition['val']) && WemoTime::OffDays($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::OffDays($wemo) > (float)$condition['val']),"val"=>RoomLightTime::OffDays($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::OffDays($wemo) > (float)$condition['val']);
             case "RoomOnTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::RoomOnTime($wemo) > (float)$condition['val']),"val"=>WemoTime::RoomOnTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::RoomOnTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::RoomOnTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::RoomOnTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::RoomOnTime($wemo) > (float)$condition['val']);
             case "RoomOffTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::RoomOffTime($wemo) > (float)$condition['val']),"val"=>WemoTime::RoomOffTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::RoomOffTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::RoomOffTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::RoomOffTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::RoomOffTime($wemo) > (float)$condition['val']);
             case "NeighborOnTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::NeighborsOnTime($wemo) > (float)$condition['val']),"val"=>WemoTime::NeighborsOnTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::NeighborsOnTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::NeighborsOnTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::NeighborsOnTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::NeighborsOnTime($wemo) > (float)$condition['val']);
             case "NeighborOffTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::NeighborsOffTime($wemo) > (float)$condition['val']),"val"=>WemoTime::NeighborsOffTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::NeighborsOffTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::NeighborsOffTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::NeighborsOffTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::NeighborsOffTime($wemo) > (float)$condition['val']);
             case "RoomLampOnTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::RoomLampOnTime($wemo) > (float)$condition['val']),"val"=>WemoTime::RoomLampOnTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::RoomLampOnTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::RoomLampOnTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::RoomLampOnTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::RoomLampOnTime($wemo) > (float)$condition['val']);
             case "RoomLampOffTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::RoomLampOffTime($wemo) > (float)$condition['val']),"val"=>WemoTime::RoomLampOffTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::RoomLampOffTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::RoomLampOffTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::RoomLampOffTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::RoomLampOffTime($wemo) > (float)$condition['val']);
             case "RoomMoodOnTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::RoomMoodOnTime($wemo) > (float)$condition['val']),"val"=>WemoTime::RoomMoodOnTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::RoomMoodOnTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::RoomMoodOnTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::RoomMoodOnTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::RoomMoodOnTime($wemo) > (float)$condition['val']);
             case "RoomMoodOffTime":
-                return ["pass"=>(isset($condition['val']) && WemoTime::RoomMoodOffTime($wemo) > (float)$condition['val']),"val"=>WemoTime::RoomMoodOffTime($wemo)];
-                //return (isset($condition['val']) && WemoTime::RoomMoodOffTime($wemo) > (float)$condition['val']);
+                return ["pass"=>(isset($condition['val']) && RoomLightTime::RoomMoodOffTime($wemo) > (float)$condition['val']),"val"=>RoomLightTime::RoomMoodOffTime($wemo)];
+                //return (isset($condition['val']) && RoomLightTime::RoomMoodOffTime($wemo) > (float)$condition['val']);
             case "IsDayInside":
                 return ["pass"=>(TimeOfDay::IsDayInside())];
             case "IsNightInside":
@@ -188,15 +188,19 @@ class AutomationRuleHandler {
         }
     }
     /**
-     * apply the automation to the wemo
+     * apply the automation to the room light group
+     * @param array $device the RoomLightsGroup data array
+     * @param array $rule the Rule data array
+     * @param string $details the details about the rule passing
      */
-    public static function ApplyAutomation($wemo,$rule,$details){
-        if($wemo['state'] != $rule['state'] && $wemo['target_state'] != $rule['state'] && (SecondsToMinutes(AutomationLogs::TimeSinceAutomaticLightEvent($wemo,$rule['name'])) > 60 || $rule['state'] == 1)){
-            AutomationLogs::SaveLog(["mac_address"=>$wemo['mac_address'],"event"=>$rule['name'],"details"=>$details]);
-            WeMoLights::SaveWeMo(["mac_address"=>$wemo['mac_address'],"target_state"=>$rule['state']]);
+    public static function ApplyAutomation($device,$rule,$details){
+        if($device['state'] != $rule['state'] && $device['target_state'] != $rule['state'] && (SecondsToMinutes(AutomationLogs::TimeSinceAutomaticLightEvent($device,$rule['name'])) > 60 || $rule['state'] == 1)){
+            AutomationLogs::SaveLog(["light_id"=>$device['id'],"event"=>$rule['name'],"details"=>$details]);
+            LightGroups::SetState($device['id'],$rule['state']);
+            //WeMoLights::SaveWeMo(["mac_address"=>$wemo['mac_address'],"target_state"=>$rule['state']]);
             // run python script
-            WeMo::Observe();
-            WeMo::SetState($wemo);    
+            //WeMo::Observe();
+            //WeMo::SetState($wemo);    
         }
     }
 }

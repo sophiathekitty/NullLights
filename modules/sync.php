@@ -31,6 +31,7 @@ class WeMoSync {
             Debug::Log("Do pull from hub?");
             WeMoSync::PullLightsFromHub();
         }
+        /*
         // cache room_light_on
         $rooms = Rooms::AllRooms();
         foreach($rooms as $room){
@@ -42,6 +43,7 @@ class WeMoSync {
             Debug::Log("room: ".$room['name']." $on");
             Rooms::SaveRoom(['id'=>$room['id'],"lights_on_in_room"=>$on]);
         }
+        */
         Services::Complete("NullLights::WeMoSync::Observe");
     }
     /**

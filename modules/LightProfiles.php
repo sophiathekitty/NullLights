@@ -114,7 +114,26 @@ class LightProfile {
         $max_light_level = (float)$profile['light_level_max'];
         if($min_light_level < $target_light_level && $target_light_level <= $max_light_level) Services::Log("NullLights::EveryMinute","LightProfile::DoesProfileWorkForRoomUse ($min_light_level <  $target_light_level <= $max_light_level) true");
         else Services::Log("NullLights::EveryMinute","LightProfile::DoesProfileWorkForRoomUse ($min_light_level <  $target_light_level <= $max_light_level) false");
-        return ($min_light_level < $target_light_level && $target_light_level <= $max_light_level);
+        return (($min_light_level < $target_light_level && $target_light_level < $max_light_level) || $target_light_level == $max_light_level);
+    }
+    /**
+     * get a list of lighting profile types
+     */
+    public static function LightingProfileTypes(){
+        $folderPath = "/var/www/html/plugins/NullLights/img/types";
+        $fileList = scandir($folderPath);
+        $filesWithoutExtension = [];
+        foreach($fileList as $file){
+             // Skip directories and hidden files (e.g., "." and "..")
+            if (is_dir($folderPath . DIRECTORY_SEPARATOR . $file) || strpos($file, '.') === 0) {
+                continue;
+            }
+            // Remove the .png extension from the filename
+            $fileNameWithoutExtension = pathinfo($file, PATHINFO_FILENAME);
+            // Add the filename to the list
+            $filesWithoutExtension[] = $fileNameWithoutExtension;
+        }
+        return $filesWithoutExtension;
     }
 }
 ?>

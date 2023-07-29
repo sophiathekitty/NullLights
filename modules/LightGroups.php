@@ -168,6 +168,16 @@ class LightGroups {
             Services::Log("LightGroups::SyncStates","save error: ".$save['error']);
             RoomLightLogs::SaveLog($light);
         }
+        $rooms = Rooms::AllRooms();
+        foreach($rooms as &$room){
+            $lights = RoomLightsGroup::RoomLightsGroupLight($room['id']);
+            $on = 0;
+            foreach($lights as $light){
+                if((int)$light['state'] == 1 && $light['type'] == "light") $on = 1;
+            }
+            Debug::Log("room: ".$room['name']." $on");
+            Rooms::SaveRoom(['id'=>$room['id'],"lights_on_in_room"=>$on]);
+        }
         Services::Complete("LightGroups::SyncStates");
     }
     /**
