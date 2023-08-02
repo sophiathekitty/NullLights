@@ -5,8 +5,11 @@
  */
 class RoomLightTime {
     private static function OnTimeCalculate($device){
-        $last_on = RoomLightLogs::LastOn($device['id']);
-        $last_off = RoomLightLogs::LastOff($device['id']);
+        $id = 0;
+        if(isset($device['light_id'])) $id = $device['light_id'];
+        elseif(isset($device['id'])) $id = $device['id'];
+        $last_on = RoomLightLogs::LastOn($id);
+        $last_off = RoomLightLogs::LastOff($id);
         $on_time = strtotime($last_on['created']);
         $off_time = strtotime($last_off['created']);
         $time = $on_time - $off_time;
@@ -114,10 +117,19 @@ class RoomLightTime {
      * @return int time in seconds
      */
     private static function StateDuringTime($device,$time,$state){
-        $log = RoomLightLogs::Recent($device['id'],$time);
-        Debug::Log("RoomLightTime::OnDuringTime",$device,$time,$log,clsDB::$db_g->last_sql,clsDB::$db_g->get_err());
-        if(count($log) == 0)
+        $id = 0;
+        if(isset($device['light_id'])) $id = $device['light_id'];
+        elseif(isset($device['id'])) $id = $device['id'];
+        $log = RoomLightLogs::Recent($id,$time);
+        $sql = clsDB::$db_g->last_sql;
+        $error = clsDB::$db_g->get_err();
+        //Debug::Log("RoomLightTime::OnDuringTime",$device,$time,$log,$sql,$error);
+        Services::Log("NullLights::AutomationLegacy","RoomLightTime::StateDuringTime ".$device['name']." - time:$time - logs count:".count($log));
+        if($error != "") Services::Log("NullLights::AutomationLegacy","RoomLightTime::StateDuringTime $error");
+        if(count($log) == 0){
+            Services::Log("NullLights::AutomationLegacy","RoomLightTime::StateDuringTime $sql");
             return 0;
+        }
         $start_time = strtotime($log[0]['created']);
         $start_on = $log[0]['state'];
         $on_time = 0;
@@ -129,9 +141,11 @@ class RoomLightTime {
                 $on_time += $time_diff;
             }
             Debug::Log("RoomLightTime::OnDuringTime",$device,"end_time:",$log[$i]['created'],"start_on: $start_on","end_on: $end_on","time_diff: $time_diff","on_time: $on_time");
+            //Services::Log("NullLights::AutomationLegacy","RoomLightTime::StateDuringTime end_time: ".$log[$i]['created']."start_on: $start_on - end_on: $end_on - time_diff: $time_diff - on_time: $on_time");
             $start_time = $end_time;
             $start_on = $end_on;
         }
+        Services::Log("NullLights::AutomationLegacy","RoomLightTime::StateDuringTime - ($state) state_time: $on_time");
         return $on_time;    
     }
     /**
@@ -174,6 +188,7 @@ class RoomLightTime {
             $t = RoomLightTime::OffTime($light);
             if(is_null($time)) $time = $t;
             if($t < $time) $time = $t;
+            Services::Log("NullLights::AutomationLegacy","RoomLightTime::RoomOffTime_RoomId - ".$light['name']." - time:$time - t:$t");
         }
         return $time;
     }
@@ -217,6 +232,7 @@ class RoomLightTime {
     public static function NeighborsOffTime_RoomId($room_id){
         $neighbors = RoomNeighbors::Neighbors($room_id);
         $time = null;
+        Services::Log("NullLights::AutomationLegacy","RoomLightTime::NeighborsOffTime_RoomId $room_id");
         Debug::Log("NeighborsOffTime",$room_id,$neighbors);
         foreach($neighbors as $neighbor){
             $id = $neighbor['neighbor_id'];
@@ -224,6 +240,7 @@ class RoomLightTime {
             $t = RoomLightTime::RoomOffTime_RoomId($id);
             if(is_null($time)) $time = $t;
             if($t < $time) $time = $t;
+            Services::Log("NullLights::AutomationLegacy","RoomLightTime::NeighborsOffTime_RoomId:$room_id - neighbor_id:$id - time:$time - t:$t");
         }
         return $time;
     }
@@ -293,12 +310,15 @@ class RoomLightTime {
     public static function RoomLampOffTime_RoomId($room_id){
         $lights = RoomLightsGroup::RoomDevices($room_id,"light","lamp");
         //Debug::Log("RoomLightTime::RoomLampOffTime",$wemo,$lights);
+        Services::Log("NullLights::AutomationLegacy","RoomLightTime::RoomLampOffTime_RoomId: $room_id - lights count:".count($lights));
         $time = null;
         foreach($lights as $light){
             $t = RoomLightTime::OffTime($light);
             if(is_null($time)) $time = $t;
             if($t < $time) $time = $t;
+            Services::Log("NullLights::AutomationLegacy","RoomLightTime::RoomLampOffTime_RoomId: time: $time, t: $t");
         }
+        Services::Log("NullLights::AutomationLegacy","RoomLightTime::RoomLampOffTime_RoomId: final time: $time");
         return $time;
     }
     /**
@@ -566,14 +586,18 @@ function RoomOffTime($room_id,$seconds){
  */
 function NeighborsOffTime($room_id,$seconds){
     return RoomLightTime::NeighborsOffTime_RoomId($room_id);
+    /*
     $room_ids = RoomNeighbors::Neighbors($room_id);
     $lights_off = $seconds;
     foreach($room_ids as $room){
+        $neighbor_id = $room_ids['neighbor_id'];
+        if($room_id == $neighbor_id) $neighbor_id = $room_ids['room_id'];
         $off_time = RoomOffTime($room,$seconds);
         if($off_time < $lights_off)
             $lights_off = $off_time;
     }
     return $lights_off;
+    */
 }
 /**
  * percentage of recent time window the lights in a neighboring room have been off

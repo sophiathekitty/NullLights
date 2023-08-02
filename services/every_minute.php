@@ -48,6 +48,8 @@ if(Servers::IsMain() || Settings::LoadSettingsVar("light_automation_mode","main"
                 if(AutomateLight($light)){
                     Services::Log("NullLights::AutomationLegacy","Automated: ".$light['name']." ".$light['state']);
                     //Settings::SaveSettingsVar("service-AutomationLegacy::".$light['name'],date("H:i:s"));
+                } else {
+                    //Services::Log("NullLights::AutomationLegacy","Skipped: ".$light['name']);
                 }
             }
         } catch(Error $e) {

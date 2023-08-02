@@ -76,19 +76,25 @@ function LightsOnInRoom($room_id){
 
 function LightsOnInNeighbors($room_id){
     $room = Rooms::RoomId($room_id);
+    Services::Log("NullLights::AutomationLegacy","LightsOnInNeighbors: ".$room['name']);
     if(isset($room['modified']) && !is_null($room['modified'])){
-        if(time() - strtotime($room['modified']) < 60) return (bool)$room['lights_on_in_neighbors'];
+        Services::Log("NullLights::AutomationLegacy","LightsOnInNeighbors: cached ".$room['lights_on_in_neighbors']);
+        return (bool)$room['lights_on_in_neighbors'];
     }
     $neighbors = RoomNeighbors::Neighbors($room_id);
     foreach($neighbors as $neighbor){
-        if(LightsOnInRoom($neighbor)){
+        $neighbor_id = $neighbor['neighbor_id'];
+        if($room_id == $neighbor_id) $neighbor_id = $neighbor['room_id'];
+        if(LightsOnInRoom($neighbor_id)){
             $room['lights_on_in_neighbors'] = 1;
             Rooms::SaveRoom($room);
+            Services::Log("NullLights::AutomationLegacy","LightsOnInNeighbors: live (yes) $room_id|$neighbor_id ".$room['lights_on_in_neighbors']);
             return true;
         }
     }
     $room['lights_on_in_neighbors'] = 0;
     Rooms::SaveRoom($room);
+    Services::Log("NullLights::AutomationLegacy","LightsOnInNeighbors: live (no) ".$room['lights_on_in_neighbors']);
     return false;
 }
 /**
@@ -100,7 +106,9 @@ function LightsOnInNeighborsCount($room_id){
     $neighbors = RoomNeighbors::Neighbors($room_id);
     $count = 0;
     foreach($neighbors as $neighbor){
-        if(LightsOnInRoom($neighbor)){
+        $neighbor_id = $neighbor['neighbor_id'];
+        if($room_id == $neighbor_id) $neighbor_id = $neighbor['room_id'];
+        if(LightsOnInRoom($neighbor_id)){
             $count++;
         }
     }

@@ -406,9 +406,18 @@ class RoomLightsGroup extends clsModel {
      */
     public static function RoomDevices($room_id,$type = null, $subtype = null){
         $instance = RoomLightsGroup::GetInstance();
-        if(is_null($type) && is_null($subtype)) return $instance->LoadAllWhere(['room_id'=>$room_id],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
-        if(is_null($subtype)) return $instance->LoadAllWhere(['room_id'=>$room_id,'type'=>$type],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
-        return $instance->LoadAllWhere(['room_id'=>$room_id,'type'=>$subtype,'subtype'=>$subtype],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        if(is_null($type) && is_null($subtype)) {
+            //Services::Log("NullLights::AutomationLegacy","RoomLightsGroup::RoomDevices (1) room_id: $room_id - type: $type - subtype: $subtype");
+            return $instance->LoadAllWhere(['room_id'=>$room_id],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        }
+        if(is_null($subtype)) {
+            //Services::Log("NullLights::AutomationLegacy","RoomLightsGroup::RoomDevices (2) room_id: $room_id - type: $type - subtype: $subtype");
+            return $instance->LoadAllWhere(['room_id'=>$room_id,'type'=>$type],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        }
+        //Services::Log("NullLights::AutomationLegacy","RoomLightsGroup::RoomDevices (3) room_id: $room_id - type: $type - subtype: $subtype");
+        $devices = $instance->LoadAllWhere(['room_id'=>$room_id,'type'=>$type,'subtype'=>$subtype],["room_id"=>"ASC","type"=>"ASC","subtype"=>"ASC"]);
+        //Services::Log("NullLights::AutomationLegacy","RoomLightsGroup::RoomDevices sql: ".clsDB::$db_g->last_sql);
+        return $devices;
     }
     /**
      * load all of type (and subtype)

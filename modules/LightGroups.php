@@ -165,18 +165,47 @@ class LightGroups {
             LightGroups::GetStateFromTuyaMembers($light);
             LightGroups::GetStateFromGoveeMembers($light);
             $save = RoomLightsGroup::SaveLight($light);
-            Services::Log("LightGroups::SyncStates","save error: ".$save['error']);
+            if($save['error'] != "") Services::Error("LightGroups::SyncStates","save error: ".$save['error']);
             RoomLightLogs::SaveLog($light);
         }
         $rooms = Rooms::AllRooms();
         foreach($rooms as &$room){
+            Services::Log("LightGroups::SyncStates","room: ".$room['name']);
             $lights = RoomLightsGroup::RoomLightsGroupLight($room['id']);
             $on = 0;
             foreach($lights as $light){
-                if((int)$light['state'] == 1 && $light['type'] == "light") $on = 1;
+                Services::Log("LightGroups::SyncStates","light: ".$light['name']. " - state:".$light['state']." - type:".$light['type']);
+                if((int)$light['state'] == 1 && $light['type'] == "light") {
+                    $on = 1;
+                    break;
+                }
             }
-            Debug::Log("room: ".$room['name']." $on");
+            $rooms["lights_on_in_room"] = $on;
+            Services::Log("LightGroups::SyncStates","lights_on_in_room: ".$room['lights_on_in_room']);
+            //Debug::Log("room: ".$room['name']." $on");
             Rooms::SaveRoom(['id'=>$room['id'],"lights_on_in_room"=>$on]);
+        }
+        foreach($rooms as $room){
+            Services::Log("LightGroups::SyncStates","neighbors for: ".$room['name']);
+            $neighbors= RoomNeighbors::Neighbors($room['id']);
+            $on = 0;
+            foreach($neighbors as $neighbor){
+                if($neighbor['neighbor_id'] != $room['id']){
+                    $neighbor_room = Rooms::RoomId($neighbor['neighbor_id']);
+                    Services::Log("LightGroups::SyncStates","use neighbor_id");
+                } else {
+                    $neighbor_room = Rooms::RoomId($neighbor['room_id']);
+                    Services::Log("LightGroups::SyncStates","use room_id");
+                }
+                Services::Log("LightGroups::SyncStates","neighbor: ".$neighbor_room['name']. " - lights_on_in_room:".$neighbor_room['lights_on_in_room']);
+                if($neighbor_room['lights_on_in_room']) {
+                    $on = 1;
+                    break;
+                }
+            }
+            $room['lights_on_in_neighbors'] = $on;
+            Services::Log("LightGroups::SyncStates","lights_on_in_room: ".$room['lights_on_in_room']." - lights_on_in_neighbors: ".$room['lights_on_in_neighbors']);
+            Rooms::SaveRoom($room);
         }
         Services::Complete("LightGroups::SyncStates");
     }
