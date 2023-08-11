@@ -43,8 +43,8 @@ class LightProfileEditorController extends Controller {
             data.id = $("dialog#lighting_profile_editor").attr("lighting_profile_id");
             data.name = $("dialog#lighting_profile_editor #light_profile_name").val();
             data.type = $("dialog#lighting_profile_editor #light_profile_type").val();
-            data.light_level_min = $("dialog#lighting_profile_editor #light_profile_light_level_min").val();
-            data.light_level_max = $("dialog#lighting_profile_editor #light_profile_light_level_max").val();
+            data.light_level_min = $("dialog#lighting_profile_editor #min_light_level").val();
+            data.light_level_max = $("dialog#lighting_profile_editor #max_light_level").val();
             data.room_id = $("dialog#lighting_profile_editor").attr("room_id");
             // add the devices to the profile
             data.devices = [];
