@@ -87,7 +87,14 @@ class LightingProfile extends clsModel {
         if(is_null($light)){
             return $instance->Save($data);
         }
-        return $instance->Save($data,['mac_address'=>$data['mac_address']]);
+        return $instance->Save($data,['id'=>$data['id']]);
+    }
+    /**
+     * delete a lighting profile
+     */
+    public static function DeleteLightProfile($id){
+        $instance = LightingProfile::GetInstance();
+        return $instance->DeleteFieldValue('id',$id);
     }
     /**
      * load all of the lighting profiles in a room

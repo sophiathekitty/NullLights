@@ -135,5 +135,31 @@ class LightProfile {
         }
         return $filesWithoutExtension;
     }
+    /**
+     * save a lighting profile json with device data
+     * @param array $profile lighting profile data array
+     */
+    public static function Save($profile){
+        if($profile['id'] == 0) unset($profile['id']);
+        Debug::Log("LightProfile::Save",$profile);
+        $save = LightingProfile::SaveLightProfile($profile);
+        $save['devices'] = [];
+        //LightProfileDevice::DeleteLightProfile(['profile_id'=>$profile['id']]);
+        foreach($profile['devices'] as $device){
+            if(is_int((int)$save['last_insert_id']) && (int)$save['last_insert_id'] != 0) $device['profile_id'] = $save['last_insert_id'];
+            Debug::Log("LightProfile::Save::device",$save['last_insert_id'],$device);
+            $save['devices'][] = LightProfileDevice::SaveLightProfile($device);
+        }
+        return $save;
+    }
+    /**
+     * delete a lighting profile json with device data
+     * @param array $profile lighting profile data array
+     */
+    public static function Delete($profile){
+        $save = LightingProfile::DeleteLightProfile($profile['profile_id']);
+        $save['devices'] = LightProfileDevice::DeleteLightProfile($profile);
+        return $save;
+    }
 }
 ?>

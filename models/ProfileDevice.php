@@ -96,12 +96,32 @@ class LightProfileDevice extends clsModel {
      */
     public static function SaveLightProfile(array $data){
         $instance = LightProfileDevice::GetInstance();
-        $data = $instance->CleanData($data);
         $light = LightProfileDevice::LightProfileId($data['id']);
-        if(is_null($light)){
+        if($data['state'] == "nothing") return self::DeleteLightProfileDevice($data);
+        if(is_null($light) || (int)$data['id'] == 0){
+            $data = $instance->CleanDataSkipId($data);
             return $instance->Save($data);
         }
-        return $instance->Save($data,['mac_address'=>$data['mac_address']]);
+        $data = $instance->CleanData($data);
+        return $instance->Save($data,['id'=>$data['id']]);
+    }
+    /**
+     * delete a profile device
+     * @param array $data the profile device data object
+     * @return array delete report ['error'=>clsDB::$db_g->get_err(),'sql'=>$sql]
+     */
+    public static function DeleteLightProfileDevice(array $data){
+        $instance = LightProfileDevice::GetInstance();
+        return $instance->DeleteFieldValue('id',$data['id']);
+    }
+    /**
+     * delete a profile device
+     * @param array $data the profile device data object
+     * @return array delete report ['error'=>clsDB::$db_g->get_err(),'sql'=>$sql]
+     */
+    public static function DeleteLightProfile(array $data){
+        $instance = LightProfileDevice::GetInstance();
+        return $instance->DeleteFieldValue('profile_id',$data['profile_id']);
     }
     /**
      * load all of the devices in a room

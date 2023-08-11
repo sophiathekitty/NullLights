@@ -15,3 +15,38 @@ span.light_profiles span.light_profile {
 #floors .room.card .details ul.light-profiles::before{
     content: 'Lighting Profiles';
 }
+dialog#lighting_profile_editor{
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    background-color: var(--background);
+}
+dialog#lighting_profile_editor h1{
+    color: var(--null);
+}
+dialog#lighting_profile_editor ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+dialog#lighting_profile_editor ul li {
+    padding: 0.2em;
+}
+dialog#lighting_profile_editor ul li:nth-child(even){
+    background-color: var(--list_even);
+}
+dialog#lighting_profile_editor ul li .key {
+    white-space: nowrap;
+}
+dialog#lighting_profile_editor ul.profile_settings .key {
+    width: 10em;
+} 
+dialog#lighting_profile_editor ul.profile_devices .key {
+    width: 20em;
+    overflow: hidden;
+}
+dialog#lighting_profile_editor main {
+    display: flex;
+    flex-direction: row;
+    max-width: 100em;
+}

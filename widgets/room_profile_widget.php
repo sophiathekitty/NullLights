@@ -21,9 +21,9 @@ require_once("../../../includes/main.php");
 </ul>
 <ul class="light-profiles">
     <?php foreach($room_profiles as $profile){ ?><li class="light_profile_item">
-        <a href="#" action="edit" profile_id="<?=$profile['id']?>"><?=$profile['name']?></a>
+        <a href="#" action="edit" profile_id="<?=$profile['id']?>" room_id="<?=$_GET['room_id'];?>"><?=$profile['name']?></a>
     </li><?php } ?>
     <li class="light_profile_nav">
-        <a href="#" action="create">Create New</a>
+        <a href="#" action="create" room_id="<?=$_GET['room_id'];?>">Create New</a>
     </li>
 </ul>
